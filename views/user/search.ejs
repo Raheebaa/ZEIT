@@ -1,0 +1,13 @@
+<%- include('header') -%>
+
+<!-- Display the search query -->
+<h2>Search Results for "<%= query %>"</h2>
+
+<!-- Display the search results -->
+<ul>
+    <% results.forEach(result => { %>
+        <li><%= result.name %></li>
+    <% }) %>
+</ul>
+
+<%- include('footer') -%>

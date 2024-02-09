@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/addproduct.css" />
+
+    <title>Add category</title>
+  </head>
+  <body>
+    <div style="background-color: black; height: 4px" class="w-100"></div>
+
+    <div id="menuHolder">
+      <div
+        role="navigation"
+        class="sticky-top border-bottom border-top"
+        id="mainNavigation"
+      >
+        <div class="flexMain">
+          <div class="flex2"></div>
+          <div
+            class="flex3"
+            id="siteBrand"
+            style="font-size: 52px; margin-bottom: 0px; padding-bottom: 0"
+          >
+            ZEIT
+          </div>
+
+          <div class="flex2 text-end d-block d-md-none">
+            <button class="whiteLink siteLink">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+
+          <div class="flex2 text-end d-none d-md-block align-content-lg-end">
+            <div class="d-flex justify-content-end align-items-center pr-5">
+              <div class="icon-box">
+                <a href=""
+                  ><i
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-cart3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+                      /></svg></i
+                ></a>
+              </div>
+
+              <div class="icon-box">
+                <a href=""
+                  ><i
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-person-circle"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                      <path
+                        fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                      /></svg></i
+                ></a>
+              </div>
+              <div class="icon-box">
+                <a href=""
+                  ><i
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="17"
+                      height="17"
+                      style="color: rgb(0, 0, 0)"
+                      fill="currentColor"
+                      class="bi bi-heart"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.920 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+                      /></svg></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <div class="row">
+        <div class="col-lg-6 mx-auto m-4">
+          <div class="card">
+            <div
+              class="card-header text-center"
+              style="background-color: rgb(0, 0, 0); color: aliceblue"
+            >
+              <h5>EDIT COUPON</h5>
+            </div>
+
+            <div class="card-body">
+              <form
+                action="/admin/updatecoupon/<%=coupons._id%>"
+                method="post"
+                id="editCouponForm"
+              >
+                <div class="mb-3">
+                  <label for="CouponName">Name</label>
+                  <input
+                    name="CouponName"
+                    id="editedname"
+                    class="form-control form-control-lg"
+                    placeholder="Enter category description"
+                    value="<%- coupons.CouponName %>"
+                  />
+                  <div class="error text-danger" id="editednameError"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="Coupon_code">Coupon code</label>
+                  <input
+                    name="Coupon_code"
+                    class="form-control form-control-lg"
+                    placeholder="Enter category description"
+                    id="editedCode"
+                    value="<%-coupons.Coupon_code %>"
+                  />
+                  <% if(err){ %>
+
+                  <small id="errorMessage" style="color: red; margin-top: 10px">
+                    <%=err%>
+                  </small>
+                  <%}%>
+
+                  <small class="text-danger" id="editedCodeError"></small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="Min_amount">Min amount</label>
+                  <input
+                    type="number"
+                    name="Min_amount"
+                    class="form-control form-control-lg"
+                    value="<%- coupons.Min_amount %>"
+                    id="Min_purchase_amount"
+                  />
+                  <div class="error text-danger" id="ditedminError"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="addedDate">start date</label>
+                  <input
+                    type="date"
+                    name="Start_date"
+                    class="form-control form-control-lg"
+                    value="<%- coupons.Start_date ? coupons.Start_date.toISOString().split('T')[0] : '' %>"
+                    id="editedStart_date"
+                  />
+                  <div class="error text-danger" id="editedstrDateError"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="addedDate">Expirey date</label>
+                  <input
+                    type="date"
+                    name="Expirey_date"
+                    class="form-control form-control-lg"
+                    value="<%- coupons.Expirey_date ? coupons.Expirey_date.toISOString().split('T')[0] : '' %>"
+                    id="editedExpiration_date"
+                  />
+                  <div class="error text-danger" id="editedexpDateError"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="addedDate">Discount amount</label>
+                  <input
+                    type="number"
+                    name="DiscountAmount"
+                    class="form-control form-control-lg"
+                    value="<%- coupons.DiscountAmount %>"
+                    id="editedDiscount_value"
+                  />
+                  <div class="error text-danger" id="editeddiscountError"></div>
+                </div>
+                <input
+                  style="
+                    background-color: rgb(0, 0, 0);
+                    border-color: rgb(0, 0, 0);
+                    font-size: 12px;
+                  "
+                  type="submit"
+                  name="submit"
+                  value="edit Coupon"
+                  class="btn btn-primary"
+                />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      setTimeout(function () {
+        document.getElementById("errorMessage").style.display = "none";
+      }, 5000);
+
+      document
+        .getElementById("editCouponForm")
+        .addEventListener("submit", function (event) {
+          function isEmpty(value) {
+            const trimmedValue = value.trim();
+            return trimmedValue === "";
+          }
+
+          function isValueLessThanZero(value) {
+            return value <= 0;
+          }
+
+          const editedname = document.getElementById("editedname");
+          const editednameValue = editedname.value;
+          const editednameError = document.getElementById("editednameError");
+
+          const editedCode = document.getElementById("editedCode");
+          const editedCodeValue = editedCode.value;
+          const editedCodeError = document.getElementById("editedCodeError");
+
+          const editedMin_purchase_amount = document.getElementById(
+            "Min_purchase_amount"
+          );
+          const editedMin_purchase_amountValue =
+            editedMin_purchase_amount.value;
+          const editedminError = document.getElementById("editedminError");
+
+          const editedExpiration_date = document.getElementById(
+            "editedExpiration_date"
+          );
+          const editedExpiration_dateValue = editedExpiration_date.value;
+          const editedexpDateError =
+            document.getElementById("editedexpDateError");
+
+          const editedStart_date = document.getElementById("editedStart_date");
+          const editedStart_dateValue = editedStart_date.value;
+          const editedstrDateError =
+            document.getElementById("editedstrDateError");
+
+          const editedDiscount_value = document.getElementById(
+            "editedDiscount_value"
+          );
+          const editedDiscount_valueValue = editedDiscount_value.value;
+          const editeddiscountError = document.getElementById(
+            "editeddiscountError"
+          );
+
+          editednameError.textContent = "";
+          editedCodeError.textContent = "";
+          editedminError.textContent = "";
+          editedexpDateError.textContent = "";
+          editedstrDateError.textContent = "";
+          editeddiscountError.textContent = "";
+
+          if (isEmpty(editednameValue)) {
+            editednameError.textContent = "Name can't be empty";
+            event.preventDefault();
+          }
+
+          if (isEmpty(editedCodeValue)) {
+            editedCodeError.textContent = "Coupon code field can't be empty";
+            event.preventDefault();
+          }
+
+          if (
+            isEmpty(editedMin_purchase_amountValue) ||
+            isNaN(editedMin_purchase_amountValue)
+          ) {
+            editedminError.textContent =
+              "Minimum purchase amount must be a valid number";
+            event.preventDefault();
+          }
+
+          if (isEmpty(editedStart_dateValue)) {
+            editedstrDateError.textContent = "Starting date can't be empty";
+            event.preventDefault();
+          }
+
+          if (isEmpty(editedExpiration_dateValue)) {
+            editedexpDateError.textContent = "Expiration date can't be empty";
+            event.preventDefault();
+          }
+
+          if (isEmpty(editedDiscount_valueValue)) {
+            editeddiscountError.textContent = "Discount value can't be empty";
+            event.preventDefault();
+          }
+
+          if (isValueLessThanZero(editedDiscount_valueValue)) {
+            editeddiscountError.textContent =
+              "Discount value can't be less than 0";
+            event.preventDefault();
+          }
+
+          if (editedStart_dateValue >= editedExpiration_dateValue) {
+            editedstrDateError.textContent =
+              " Starting date must be before the Expiration date";
+            event.preventDefault();
+          }
+        });
+    </script>
+  </body>
+</html>

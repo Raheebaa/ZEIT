@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>order details</title>
+</head>
+
+<body>
+  <%- include('header') -%>
+  <div class="col-md-3 col-lg-2 sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="/admin/admindash">
+            <i class="fa fa-home"></i> Dashboard
+        </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/product">
+                <i class="fa fa-product-hunt"></i> Products
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/category">
+                <i class="fa fa-list"></i> Category
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/brand">
+                <i class="fa fa-list"></i> Brands
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/customers">
+                <i class="fa fa-users"></i> Customers
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/orders">
+                <i class="fa fa-bars"></i> Orders
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/sales">
+                <i class="fa fa-line-chart"></i> Sales
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/logout">
+                <i class="fa fa-sign-out"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+    <div class="d-flex" id="wrapper">
+   
+
+    <!-- /#page-content-wrapper -->
+    <div class="container">
+ 
+
+<section class="h-100 gradient-custom shadow">
+    <div class="container py-5 h-100 ">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-10 col-xl-8">
+          <div class="card shadow" style="border-radius: 10px;">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <p class="lead fw-normal mb-0" style="color: #48595a;">Receipt</p>
+            
+              </div>
+              <div class="card shadow-0 border mb-4">
+                <div class="card-body">
+                    <% if (orderData && orderData.Items && Array.isArray(orderData.Items)) { %>
+                        <% orderData.Items.forEach((x) => { %>
+                            <div class="row">
+                                <% const taxRate = 0.01; %>
+                                <% const itemPrice = (x.productId?.price || 0) * x.quantity; %>
+                                <% const tax = itemPrice * taxRate; %>
+                                <% const totalPrice = itemPrice + tax; %>
+
+                                <% if (x.productId && x.productId.ProductImage &&
+                                Array.isArray(x.productId.ProductImage) && x.productId.ProductImage.length > 0) { %>
+                                <img src="/upload/<%= x.productId.ProductImage[0] %>" class="border rounded me-3"
+                                    style="width: 120px; height: 120px;" />
+                            <% } else { %>
+                                <img src="#" class="border rounded me-3" style="width: 60px; height: 60px;" />
+                            <% } %>
+                            
+                            <% if (x.productId) { %>
+    <p>ProductName: <%= x.productId.ProductName || 'N/A' %></p>
+    <% if (x.productId.price !== undefined && x.productId.price !== null) { %>
+        <p>Item Price: $<%= x.productId.price.toFixed(2) %></p>
+    <% } else { %>
+        <p>Item Price: N/A (productId.price is undefined or null)</p>
+    <% } %>
+<% } else { %>
+    <p>ProductName: N/A (x.productId is undefined or null)</p>
+    <p>Item Price: N/A</p>
+<% } %>
+
+<p>Tax: $<%= tax.toFixed(2) %></p>
+<p style="color: rgb(3, 5, 50);">Quantity: <%= x.quantity %></p>
+<p>Total Price₹ <%= totalPrice.toFixed(2) %></p>
+
+                        <% }) %>
+                    <% } else { %>
+                        <h3>No data available</h3>
+                    <% } %>
+                </div>
+            </div>
+
+              <div class="d-flex justify-content-between">
+                <p class="text-muted mb-0">Order ID : <%=orderData._id%></p>
+                <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">GST 18%</span> 123</p> -->
+              </div> 
+              <div class="d-flex justify-content-between mb-5">
+                <p class="text-muted mb-0"><b>Order Status : <%=orderData.Status%></b></p>
+                <br>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="text-muted mb-0"><b>Name : <%=orderData.Address.name %></b></p>
+              </div> 
+                <div class="d-flex justify-content-between">
+                  <p class="text-muted mb-0"><b>House : <%=orderData.Address.addressLine %></b></p>
+                </div> 
+                <div class="d-flex justify-content-between">
+                  <p class="text-muted mb-0"><b>City : <%=orderData.Address.city %></b></p>
+                </div> 
+                <div class="d-flex justify-content-between">
+                  <p class="text-muted mb-0"><b>State : <%=orderData.Address.state %></b></p>
+                </div> 
+                <div class="d-flex justify-content-between">
+                  <p class="text-muted mb-0"><b>PinCode : <%=orderData.Address.pincode %></b></p>
+                </div> 
+                <div class="d-flex justify-content-between">
+                  <p class="text-muted mb-0"><b>Mobile Number : <%=orderData.Address.mobileNumber %></b></p>
+                </div>
+
+               
+            
+              
+                <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span> Free</p> -->
+            </div>
+            <div class="card-footer border-0 px-4 py-5"
+              style="background-color: #323e31; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
+            <span class="h2 mb-0 ms-2">  ₹ <%= orderData.TotalAmount %></span></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

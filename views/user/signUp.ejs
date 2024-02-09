@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>signup</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/user/css/home.css">
+  <style>
+    .error-message {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <!-- Left Column - Picture -->
+      <div class="col-md-6">
+        <div class="image-container text-center">
+          <img src="/assets/wtch.jpeg" class="img-fluid" alt="Sample image" style="width: 100%; max-height: 505px; margin-bottom: 20px;">
+        </div>
+      </div>
+
+      <!-- Right Column - Form -->
+      <div class="col-md-6">
+        <div class="col-md-9 col-lg-6 col-xl-5 text-center">
+          <div class="image-container" style="display: flex; align-items: flex-start; margin-bottom: 10px;">
+            <div class="image-wrapper">
+              <img src="/assets/Z.jpg" id="custom-image" class="img-fluid" alt="Sample image" style="width: 50px;">
+            </div>
+            <div class="d-fl
+            ex align-items-center ml-2">
+              <span class="h1 fw-bold mb-0">ZEIT</span>
+            </div>
+          </div>
+         
+          <div class="login">
+            <div class="input">
+              <form action="/signupp" method="post" class="signUp-form border border-dark border-2 p-4 mt-5" id="signUp-form" style="width: 500px;">
+                <div class="header_text">
+                  <h2>SIGNUP</h2>
+                </div>
+                <% if(locals.error){ %>
+                  <p style="color: red;"><%=error %> </p>
+                <% } %>
+                <div class="inp_l">
+                  <div id="error-message" class="error-message"></div>
+                  <div class="mb-3">
+                    <input class="form-control login-input" type="text" id="Username" name="username" autofocus placeholder="Username" required>
+                    <div class="error-message" id="nameError"></div>
+                  </div>
+
+                  <div class="mb-3">
+                    <input class="form-control login-input" type="email" id="emailInput" name="email" autofocus placeholder="Enter your Email Address" required>
+                    <div class="error-message" id="emailError"></div>
+                  </div>
+
+                  <div class="mb-3">
+                    <input class="form-control login-input" type="password" id="password" name="password" placeholder="Password" required>
+                    <input type="checkbox" id="showPassword" class="checkbox" />
+                    <label for="showPassword">Show Password</label>
+                    <div class="error-message" id="passwordError"></div>
+                  </div>
+
+                  <div class="mb-3">
+              
+                    <input class="form-control login-input" type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                  </div>
+                </div>
+
+                <div class="final">
+                  <button class="btn btn-primary signup-button" type="submit" id="button">Signup</button>
+                  <p class="mt-3">Already have an account?<a href="/userlogin">Login</a></p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const signUpForm = document.getElementById('signUp-form');
+      const emailInput = document.getElementById('emailInput');
+      const emailError = document.getElementById('emailError');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const passwordError = document.getElementById('passwordError');
+      const confirmPasswordError = document.getElementById('confirmPasswordError');
+      const showPasswordCheckbox = document.getElementById('showPassword');
+      const errorMessage = document.getElementById('error-message');
+  
+      signUpForm.addEventListener('submit', function (event) {
+        emailError.textContent = '';
+        errorMessage.textContent = '';
+        passwordError.textContent = '';
+        confirmPasswordError.textContent = '';
+  
+        const emailValue = emailInput.value.trim();
+        if (!emailValue) {
+          emailError.textContent = 'Email is required';
+          event.preventDefault();
+          return;
+        }
+  
+        if (errorMessage.textContent.trim() !== '') {
+          event.preventDefault();
+          return;
+        }
+  
+        const passwordValue = passwordInput.value.trim();
+        const confirmPasswordValue = confirmPasswordInput.value.trim();
+  
+        if (passwordValue === '' || confirmPasswordValue === '') {
+          passwordError.textContent = "Password and Confirm Password fields can't be empty";
+          event.preventDefault();
+          return;
+        }
+  
+        if (passwordValue !== confirmPasswordValue) {
+          confirmPasswordError.textContent = "Passwords do not match";
+          event.preventDefault();
+          return;
+        }
+  
+        if (errorMessage.textContent.trim() !== '') {
+          event.preventDefault();
+          return;
+        }
+      });
+  
+      showPasswordCheckbox.addEventListener('change', function () {
+        const passwordType = this.checked ? 'text' : 'password';
+        passwordInput.type = passwordType;
+        confirmPasswordInput.type = passwordType;
+      });
+    });
+  </script>
+  
+</body>
+
+</html>

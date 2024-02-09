@@ -1,0 +1,63 @@
+<%- include('header') -%>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+    
+        <img src="/assets/Z.jpg" class="img-fluid" alt="Sample image" style="width: 50px;height: 50px;">
+        <p class="custom-text-style">ZEIT</p>
+  
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 135px;">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+        
+                <div class="container-fluid">
+                  <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                      <ul class="navbar-nav">
+                          <li class="nav-item dropdown">
+                              <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Brands
+                              </a>
+                             
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contacts</a>
+                </li>
+            </ul>
+            <form class="custom-form d-flex ms-auto" action="/search" method="GET">
+                <input class="form-control me-2" type="search" placeholder="Search" name="query" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            
+
+
+            <div class="d-flex float-end">
+     
+              <a href="" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" style="padding-left: 4px;">   <i class="fa fa-heart" aria-hidden="true"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+              <a href="/cart" class="border rounded py-1 px-3 nav-link d-flex align-items-center">
+                <i class="fas fa-shopping-cart m-1 me-md-2"></i>
+                <p class="d-none d-md-block mb-0">My cart</p>
+             </a>
+             
+              <a href="/profile" class="border rounded py-1 px-3 nav-link d-flex align-items-center">
+                    <i class="fas fa-user m-1 me-md-2"></i>
+                  </a>
+          </div>
+        </div>
+    </div>
+  </nav>
+
+<script>
+   
+
+       

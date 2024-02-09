@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+    <link rel="stylesheet" href="/user/css/home.css">
+    <link rel="stylesheet" href="/user/css/unAuthorised.css">
+    <link rel="stylesheet" href="/user/css/profile.css">
+
+</head>
+
+<body>
+
+    
+  <%- include('header') -%>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+    
+        <img src="/assets/Z.jpg" class="img-fluid" alt="Sample image" style="width: 50px;height: 50px;">
+        <p class="custom-text-style">ZEIT</p>
+  
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 135px;">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+        
+                <div class="container-fluid">
+                  <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                      <ul class="navbar-nav">
+                          <li class="nav-item dropdown">
+                              <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Brands
+                              </a>
+                             
+
+
+                              
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+              
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contacts</a>
+                </li>
+            </ul>
+          
+            <form class="custom-form d-flex ms-auto">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            <div class="d-flex float-end">
+     
+              <a href="" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank" style="padding-left: 4px;">   <i class="fa fa-heart" aria-hidden="true"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+              <a href="" class="border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+              <a href="" class="border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank">
+                <i class="fas fa-user m-1 me-md-2"></i>
+              </a>
+              
+          
+            </div>
+            
+        </div>
+    </div>
+  </nav>
+  
+  
+  <%- include('footer') -%>
+        <div class="container rounded bg-white mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-center text-center py-3 dp">    <label for="imageInput" style="position: relative; display: inline-block; cursor: pointer;">
+                        <img id="selectedAvatar"
+                            src="  " class="rounded-circle p-2" style="width: 150px; height: 150px; object-fit: cover;"
+                            alt="Profile Picture" />
+                        <span class="font-weight-bold" style="position: absolute; top: 20; left: 30; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-sharp fa-solid fa-arrow-up-from-bracket" style="font-size: 24px; color: rgb(87, 60, 60);"></i>
+                        </span>
+                    </label>
+                                <input type="file" accept="image/*" id="imageInput" style="display:none;" onchange="uploadProfileImage(event)" />
+                            
+                                <%=userData.username%>
+                        </span><span class="text-black-50">
+
+                            <%=userData.email%>
+
+                        </span><span> </span></div>
+
+
+
+                        <div class="list d-flex flex-column justify-content-between">
+                            <ul class="list-group rounded-0">
+                                <li class="list-group-item selected"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                                        height="18" viewBox="0 0 18 18" fill="none">
+                                        <path
+                                            d="M9 0C4.032 0 0 4.032 0 9C0 13.968 4.032 18 9 18C13.968 18 18 13.968 18 9C18 4.032 13.968 0 9 0ZM4.563 14.652C4.95 13.842 7.308 13.05 9 13.05C10.692 13.05 13.059 13.842 13.437 14.652C12.213 15.624 10.674 16.2 9 16.2C7.326 16.2 5.787 15.624 4.563 14.652ZM14.724 13.347C13.437 11.781 10.314 11.25 9 11.25C7.686 11.25 4.563 11.781 3.276 13.347C2.358 12.141 1.8 10.638 1.8 9C1.8 5.031 5.031 1.8 9 1.8C12.969 1.8 16.2 5.031 16.2 9C16.2 10.638 15.642 12.141 14.724 13.347ZM9 3.6C7.254 3.6 5.85 5.004 5.85 6.75C5.85 8.496 7.254 9.9 9 9.9C10.746 9.9 12.15 8.496 12.15 6.75C12.15 5.004 10.746 3.6 9 3.6ZM9 8.1C8.253 8.1 7.65 7.497 7.65 6.75C7.65 6.003 8.253 5.4 9 5.4C9.747 5.4 10.35 6.003 10.35 6.75C10.35 7.497 9.747 8.1 9 8.1Z"
+                                            fill="black" />
+                                    </svg><a href="/accountDetails" style="color: black;text-decoration: none;"> Account details </style></a></li>
+                                <li class="list-group-item"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="16"
+                                        viewBox="0 0 22 16" fill="none">
+                                        <path
+                                            d="M5 16C4.16667 16 3.45833 15.7083 2.875 15.125C2.29167 14.5417 2 13.8333 2 13H0V2C0 1.45 0.196 0.979333 0.588 0.588C0.979333 0.196 1.45 0 2 0H16V4H19L22 8V13H20C20 13.8333 19.7083 14.5417 19.125 15.125C18.5417 15.7083 17.8333 16 17 16C16.1667 16 15.4583 15.7083 14.875 15.125C14.2917 14.5417 14 13.8333 14 13H8C8 13.8333 7.70833 14.5417 7.125 15.125C6.54167 15.7083 5.83333 16 5 16ZM5 14C5.28333 14 5.521 13.904 5.713 13.712C5.90433 13.5207 6 13.2833 6 13C6 12.7167 5.90433 12.4793 5.713 12.288C5.521 12.096 5.28333 12 5 12C4.71667 12 4.479 12.096 4.287 12.288C4.09567 12.4793 4 12.7167 4 13C4 13.2833 4.09567 13.5207 4.287 13.712C4.479 13.904 4.71667 14 5 14ZM2 11H2.8C3.08333 10.7 3.40833 10.4583 3.775 10.275C4.14167 10.0917 4.55 10 5 10C5.45 10 5.85833 10.0917 6.225 10.275C6.59167 10.4583 6.91667 10.7 7.2 11H14V2H2V11ZM17 14C17.2833 14 17.5207 13.904 17.712 13.712C17.904 13.5207 18 13.2833 18 13C18 12.7167 17.904 12.4793 17.712 12.288C17.5207 12.096 17.2833 12 17 12C16.7167 12 16.4793 12.096 16.288 12.288C16.096 12.4793 16 12.7167 16 13C16 13.2833 16.096 13.5207 16.288 13.712C16.4793 13.904 16.7167 14 17 14ZM16 9H20.25L18 6H16V9Z"
+                                            fill="black" />
+                                    </svg><a href="/toOrderPage" style="color: black;text-decoration: none;"> Orders</a></li>
+                                <li class="list-group-item"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <mask id="mask0_851_796" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0"
+                                            y="0" width="24" height="24">
+                                            <rect width="24" height="24" fill="#D9D9D9" />
+                                        </mask>
+                                        <g mask="url(#mask0_851_796)">
+                                            <path
+                                                d="M7 22C6.45 22 5.97917 21.8042 5.5875 21.4125C5.19583 21.0208 5 20.55 5 20C5 19.45 5.19583 18.9792 5.5875 18.5875C5.97917 18.1958 6.45 18 7 18C7.55 18 8.02083 18.1958 8.4125 18.5875C8.80417 18.9792 9 19.45 9 20C9 20.55 8.80417 21.0208 8.4125 21.4125C8.02083 21.8042 7.55 22 7 22ZM17 22C16.45 22 15.9792 21.8042 15.5875 21.4125C15.1958 21.0208 15 20.55 15 20C15 19.45 15.1958 18.9792 15.5875 18.5875C15.9792 18.1958 16.45 18 17 18C17.55 18 18.0208 18.1958 18.4125 18.5875C18.8042 18.9792 19 19.45 19 20C19 20.55 18.8042 21.0208 18.4125 21.4125C18.0208 21.8042 17.55 22 17 22ZM6.15 6L8.55 11H15.55L18.3 6H6.15ZM5.2 4H19.95C20.3333 4 20.625 4.17083 20.825 4.5125C21.025 4.85417 21.0333 5.2 20.85 5.55L17.3 11.95C17.1167 12.2833 16.8708 12.5417 16.5625 12.725C16.2542 12.9083 15.9167 13 15.55 13H8.1L7 15H19V17H7C6.25 17 5.68333 16.6708 5.3 16.0125C4.91667 15.3542 4.9 14.7 5.25 14.05L6.6 11.6L3 4H1V2H4.25L5.2 4Z"
+                                                fill="black" />
+                                        </g>
+                                    </svg><a href="/cart" style="color: black;text-decoration: none;"> Cart</a></li>
+                                <li class="list-group-item"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="18"
+                                        viewBox="0 0 19 18" fill="none">
+                                        <path
+                                            d="M18 4.28V2C18 0.9 17.1 0 16 0H2C0.89 0 0 0.9 0 2V16C0 17.1 0.89 18 2 18H16C17.1 18 18 17.1 18 16V13.72C18.59 13.37 19 12.74 19 12V6C19 5.26 18.59 4.63 18 4.28ZM17 6V12H10V6H17ZM2 16V2H16V4H10C8.9 4 8 4.9 8 6V12C8 13.1 8.9 14 10 14H16V16H2Z"
+                                            fill="black" />
+                                    </svg> My Wallet</li>
+    
+                            </ul>
+                            <ul class="list-group rounded-0">
+                                <li class="list-group-item"><svg fill="#000000" height="20px" width="20px" version="1.1"
+                                        id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330"
+                                        xml:space="preserve">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <g id="XMLID_2_">
+                                                <path id="XMLID_4_"
+                                                    d="M51.213,180h173.785c8.284,0,15-6.716,15-15s-6.716-15-15-15H51.213l19.394-19.393 c5.858-5.857,5.858-15.355,0-21.213c-5.856-5.858-15.354-5.858-21.213,0L4.397,154.391c-0.348,0.347-0.676,0.71-0.988,1.09 c-0.076,0.093-0.141,0.193-0.215,0.288c-0.229,0.291-0.454,0.583-0.66,0.891c-0.06,0.09-0.109,0.185-0.168,0.276 c-0.206,0.322-0.408,0.647-0.59,0.986c-0.035,0.067-0.064,0.138-0.099,0.205c-0.189,0.367-0.371,0.739-0.53,1.123 c-0.02,0.047-0.034,0.097-0.053,0.145c-0.163,0.404-0.314,0.813-0.442,1.234c-0.017,0.053-0.026,0.108-0.041,0.162 c-0.121,0.413-0.232,0.83-0.317,1.257c-0.025,0.127-0.036,0.258-0.059,0.386c-0.062,0.354-0.124,0.708-0.159,1.069 C0.025,163.998,0,164.498,0,165s0.025,1.002,0.076,1.498c0.035,0.366,0.099,0.723,0.16,1.08c0.022,0.124,0.033,0.251,0.058,0.374 c0.086,0.431,0.196,0.852,0.318,1.269c0.015,0.049,0.024,0.101,0.039,0.15c0.129,0.423,0.28,0.836,0.445,1.244 c0.018,0.044,0.031,0.091,0.05,0.135c0.16,0.387,0.343,0.761,0.534,1.13c0.033,0.065,0.061,0.133,0.095,0.198 c0.184,0.341,0.387,0.669,0.596,0.994c0.056,0.088,0.104,0.181,0.162,0.267c0.207,0.309,0.434,0.603,0.662,0.895 c0.073,0.094,0.138,0.193,0.213,0.285c0.313,0.379,0.641,0.743,0.988,1.09l44.997,44.997C52.322,223.536,56.161,225,60,225 s7.678-1.464,10.606-4.394c5.858-5.858,5.858-15.355,0-21.213L51.213,180z">
+                                                </path>
+                                                <path id="XMLID_5_"
+                                                    d="M207.299,42.299c-40.944,0-79.038,20.312-101.903,54.333c-4.62,6.875-2.792,16.195,4.083,20.816 c6.876,4.62,16.195,2.794,20.817-4.083c17.281-25.715,46.067-41.067,77.003-41.067C258.414,72.299,300,113.884,300,165 s-41.586,92.701-92.701,92.701c-30.845,0-59.584-15.283-76.878-40.881c-4.639-6.865-13.961-8.669-20.827-4.032 c-6.864,4.638-8.67,13.962-4.032,20.826c22.881,33.868,60.913,54.087,101.737,54.087C274.956,287.701,330,232.658,330,165 S274.956,42.299,207.299,42.299z">
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </svg><a href="/logout" style="color: black;text-decoration: none;"> Logout</a></li>
+                                <li class="list-group-item"> <a href="/toProduct-list/1" style="color: black; text-decoration: none;">continue Shopping</a></li>
+    
+                            </ul>
+                        </div>
+
+
+
+
+                </div>
+                <div class="col-md-9">
+                    <div class="p-3 py-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-right">Adresses</h4>
+                            <a href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat"><button
+                                    class="btn btn-primary profile-button rounded-0 px-4" type="button">
+                                    Add Address</button></a>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/addAddress" method="post">
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">Name:</label>
+                                                    <input type="text" name="name" class="form-control"
+                                                        id="recipient-name" required>
+                                                </div>
+                                                <div class="form-group">
+
+                                                    <label for="recipient-name" class="col-form-label">Address:</label>
+                                                    <input type="text" name="address" class="form-control"
+                                                        id="recipient-name" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">City:</label>
+                                                    <input type="text" name="city" class="form-control"
+                                                        id="recipient-name" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">Pincode:</label>
+                                                    <input type="text" name="pincode" class="form-control"
+                                                        id="recipient-name"
+                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                        pattern="[0-9]*" maxlength="6" required>
+                                                    <div id="pincode-validation-message" class="text-danger"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">State:</label>
+
+                                                    <input type="text" name="state" class="form-control"
+                                                        id="recipient-name" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">Mobile
+                                                        Number:</label>
+                                                    <input type="number" name="number" class="form-control"
+                                                        id="recipient-name" required>
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" id="submit-button"
+                                                class="btn btn-primary">Add</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <hr class="mt-0 mb-4">
+                    <div class="card border  rounded shadow ">
+                            <div class="m-4 rounded shadow-5">
+                                <h4 class="card-title mb-4">addresses</h4>
+                                <% if (userData.Address && userData.Address.length> 0) { %>
+                                    <% userData.Address.forEach((x)=> { %>
+                                        <div class="form-check my-3">
+                                            
+                                            <P>
+                                                <%= x.name %>
+                                            </P>
+                                            <P>
+                                                <%= x.addressLine %>
+                                            </P>
+                                            <P>
+                                                <%= x.pinCode %>
+                                            </P>
+                                            <P>
+                                                <%= x.city %>
+                                            </P>
+                                            <P>
+                                                <%= x.state %>
+                                            </P>
+                                            <P>
+                                                <%= x.MobileNumber %>
+                                            </P>
+                                            <button class="button-48 w-100 border mt-2"
+                                                onclick="openEditAddressModal('<%= x._id %>')">Edit
+                                                Address</button>
+                                                
+                                            <button class="btn btn-outline-danger rounded-0 w-100 border mt-2"
+                                                onclick="deleteAddress('<%= x._id %>')">Delete
+                                                Address</button>
+                                        </div>
+    
+                                        <!-- Edit Address Modal -->
+                                        <div class="modal fade" id="editAddressModal<%= x._id %>" tabindex="-1"
+                                            role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <!-- Edit Address Form -->
+                                                        <form action="/editAddress/<%= x._id %>" method="post" on>
+                                                            <div class="form-group">
+                                                                <label for="address" class="col-form-label">Name:</label>
+                                                                <input type="text" name="name" class="form-control"
+                                                                    id="address" value="<%= x.name %>">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="address" class="col-form-label">Address:</label>
+                                                                <input type="text" name="address" class="form-control"
+                                                                    id="address" value="<%= x.addressLine %>">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="city" class="col-form-label">City:</label>
+                                                                <input type="text" name="city" class="form-control"
+                                                                    id="city" value="<%= x.city %>">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="pincode" class="col-form-label">Pincode:</label>
+                                                                <input type="text" name="pincode" class="form-control"
+                                                                    id="pincode"
+                                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                                    pattern="[0-9]*" maxlength="6" value="<%= x.pinCode %>">
+                                                                <div id="pincode-validation-message" class="text-danger">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="state" class="col-form-label">State:</label>
+                                                                <input type="text" name="state" class="form-control"
+                                                                    id="state" value="<%= x.state %>">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="number" class="col-form-label">Mobile
+                                                                    Number:</label>
+                                                                <input type="number" name="number" class="form-control"
+                                                                    id="number" value="<%= x.MobileNumber %>">
+                                                            </div>
+                                                            <!-- End of Edit Address Form -->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End of Edit Address Modal -->
+                                        <% }) %>
+    
+                                            <% } else { %>
+                                                <p>No addresses available.</p>
+                                                <% } %>
+    
+                            </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+        </div>
+
+        </div>
+        </div>
+        </div>
+        </div>
+
+        <script>
+            var el = document.getElementById("wrapper");
+            var toggleButton = document.getElementById("menu-toggle");
+
+            toggleButton.onclick = function () {
+                el.classList.toggle("toggled");
+            };
+        </script>
+        <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+            function uploadProfileImage(event) {
+                const fileInput = event.target;
+        
+                if (fileInput.files && fileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append('profileImage', fileInput.files[0]);
+        
+                    fetch('/uploadProfileImage', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('File uploaded successfully.');
+                            window.location.reload();
+                        } else {
+                            console.error('File upload failed.');
+                        }
+                    })
+                    .catch(error => console.error('Error uploading file:', error));
+                }
+            }
+        </script>
+        <script>
+            function deleteAddress(addressId) {
+                swal({
+          title: "Are you sure?",
+          text: "this address will be removed",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+          .then((remove) => {
+            if (remove) {
+                fetch(`/deleteAddress/${addressId}`, {
+                        method: 'POST',
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log(data);
+                            if (data.success) {
+                                // Reload the page or update the UI as needed
+                                window.location.reload();
+                            } else {
+                                console.error('Error deleting address:', data.message);
+                                swal("Sorry!", "Opps, something went wrong. Please try again later.",data.message);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting address:', error);
+                        });
+                    
+                    
+
+            } else {
+              swal("address not deleted");
+            }
+          });
+      }        
+            function openEditAddressModal(addressId) {
+                $('#editAddressModal' + addressId).modal('show');
+            }
+        </script>
+</body>
+
+
+</html>

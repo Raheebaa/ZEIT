@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+</head>
+<% function calculateDiscountedAmount(actualPrice, discountPercentage) { %>
+  <% const discountAmount = (actualPrice * discountPercentage) / 100; %>
+  <% return discountAmount; %>
+<% } %>
+
+<% function calculateDiscountedPrice(actualPrice, discountPercentage) { %>
+  <% const discountAmount = (actualPrice * discountPercentage) / 100; %>
+  <% const discountedPrice = actualPrice - discountAmount; %>
+  <% return discountedPrice; %>
+<% } %>
+<%- include('navbar') -%>
+<%- include('header') -%>
+
+  <div class="container-fluid mt-5 mb-5">
+    <h1 class="text-center mt-3 mb-4">Product List</h1>
+    <div class="row g-2">
+      <div class="col-md-3">
+        <div class="t-products p-2">
+          
+          <h6 class="text-uppercase">Filters</h6>
+          <div class="p-lists">
+        
+            
+          </div>
+        </div>
+        <div class="processor p-2">
+          <div class="heading d-flex justify-content-between align-items-center">
+            <h6 class="text-uppercase">PRICE</h6> 
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="processorGroup" id="radioCoreI7" checked>
+              <label class="form-check-label" for="radioCoreI7"> All Price </label>
+            </div>
+        </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="processorGroup" id="radioCoreI6">
+        <label class="form-check-label" for="radioCoreI6"> Under 500 </label>
+            </div>
+           
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="processorGroup" id="radioCoreI3" >
+              <label class="form-check-label" for="radioCoreI3"> 600-1500</label>
+            </div>
+            
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="processorGroup" id="radioCentron">
+              <label class="form-check-label" for="radioCentron"> 1600-2500 </label>
+            </div>
+          
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="processorGroup" id="radioPentinum">
+              <label class="form-check-label" for="radioPentinum"> 2600-3500 </label>
+           
+            </div>
+            
+          </div>
+          <h6 class="text-uppercase">Brands</h6>
+          <div class="p-lists">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showAllBrandsCheckbox">
+                <label class="form-check-label" for="showAllBrandsCheckbox">
+                    All Brands
+                </label>
+            </div>
+        
+            <% brands.forEach(brand => { %>
+                <% if (!brand.isBlocked) { %>
+                    <div class="form-check">
+                        <input class="form-check-input brand-checkbox" type="checkbox" name="brandCheckbox" data-brand-name="<%= brand.BrandName %>">
+                        <label class="form-check-label" for="brandCheckbox<%= brand._id %>"><%= brand.BrandName %></label>
+                    </div>
+                <% } %>
+            <% }) %>
+        </div>
+        
+        </div>
+       
+        
+      </div>
+
+      <div class="col-md-9">
+        <div class="row g-2">
+
+            <h2 style="margin-left: 80px;">Products in <%= selectedCategory %></h2>
+
+            <% if(product.length>0){ %>
+                <% product.forEach(products => { %>
+                    <% if (!products.isBlocked) { %>
+                      <% const categoryOffer = catoffers.find(offer => offer.categoryName === selectedCategory); %>
+                      <% const offerPercentage = categoryOffer && categoryOffer.percentage > 0 ? categoryOffer.percentage : 0; %>
+                      
+                        <div class="col-md-4" data-price-range="<%= products.price %>" data-product-brand="<%= products.brand.BrandName %>" data-product-price="<%= products.price %>" data-discount-amount="<%= calculateDiscountedAmount(products.price, offerPercentage) %>">
+                      
+                        <div class="product py-4" style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                           
+                    
+                            <!-- Show the offer percentage only if it is greater than 0 -->
+                            <% if (offerPercentage > 0) { %>
+                                <!-- Style the offer percentage as a small card -->
+                                <div class="offer-percentage" style="background-color: #f22c16; padding-left: 40px; color: #ffffff; padding: 5px; border-radius: 5px; text-align: center; width: 90px; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1; margin-left: 91px;">
+                                    <%= offerPercentage %>% OFF
+                                </div>
+                            <% } %>
+                    
+                            <div class="text-center" style="position: relative; z-index: 0;">
+                                <a href="/productdetails/<%= products._id %>">
+                                    <!-- <i class="fas fa-heart" style="position: absolute; top: 0; left: 0; color: rgb(0, 0, 0);"></i> -->
+                                    <img src="/upload/<%= products.ProductImage[0] %>" width="200" height="210" alt="<%= products.ProductName %>">
+                                </a>
+                            </div>
+                    
+                            <div class="about text-center">
+                                <h5 style="color: black; text-decoration: none;"><%= products.ProductName %></h5>
+                                <p style="color: black; text-decoration: none;">Brand: <%= products.brand.BrandName %></p>
+                                
+                                <!-- Display the price normally if there is no offer percentage -->
+                                <% if (offerPercentage <= 0) { %>
+                                    <h6 style="color: black; text-decoration: none;">Price: <%= products.price %></h6>
+                                <% } else { %>
+                                    <!-- Display the actual price with a strikethrough effect -->
+                                    <h6 style="color: black; text-decoration: none;"><del>RS <%= products.price %></del></h6>
+                                    
+                                    <!-- Calculate and display the discounted price with bold text -->
+                                    <h6 style="color: black; text-decoration: none; font-weight: bold;">Discounted Price: <%= calculateDiscountedPrice(products.price, offerPercentage) %></h6>
+                                <% } %>
+                            </div>
+                    
+                            <div class="cart-button mt-3 px-2 d-flex justify-content-between align-items-center">
+                                <% if (products.stock > 0) { %>
+                                    <button id="addToCartButton" data-item-id="<%= products._id %>" class="btn btn-primary text-uppercase">Add to cart</button>
+                                <% } else { %>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <button disabled class="btn btn-secondary text-uppercase">Out of Stock</button>
+                                        <p class="text-danger mt-2">This product is currently out of stock.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <% function calculateDiscountedPrice(actualPrice, discountPercentage) {
+                        const discountAmount = (actualPrice * discountPercentage) / 100;
+                        const discountedPrice = actualPrice - discountAmount;
+                        return discountedPrice; // Adjust decimal places as needed
+                    } %>
+              
+                  
+            <% } %>
+        <% }); %>
+      <%}else{ %>
+        <div class="col-12">
+          <p>No products available</p>
+        </div>
+        <% } %>
+    
+        <% const transactionsPerPage = 10; %>
+        <nav aria-label="Page navigation">
+          <ul class="pagination" style="justify-content: center;">
+            <% for (let i = 1; i <= Math.ceil(product.length / transactionsPerPage); i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+          </ul>
+        </nav>
+        
+      </div>
+  </div>
+</div>
+</div>
+
+
+
+  <footer class="text-center text-lg-start" >
+    <!-- Grid container -->
+    <div class="container-fluid " style="width: 100%; background-color:  #afa5a5; margin-top: 150px;">
+        <!-- Section: Links -->
+        <!-- <section class=""> -->
+            <!-- Grid row -->
+            <div class="row" style="background-color: #afa5a5;">
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3 text-black">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">
+                        Company name
+                    </h6>
+                    <p>
+                        Here you can use rows and columns to organize your footer
+                        content. Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit.
+                    </p>
+                </div>
+                <!-- Grid column -->
+
+                <hr class="w-100 clearfix d-md-none" />
+
+                <!-- Grid column -->
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3 text-black">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">Caree</h6>
+                    <p>
+                        <a class="text-black">MDBootstrap</a>
+                    </p>
+                    <p>
+                        <a class="text-black">MDWordPress</a>
+                    </p>
+                    <p>
+                        <a class="text-black">BrandFlow</a>
+                    </p>
+                    <p>
+                        <a class="text-black">Bootstrap Angular</a>
+                    </p>
+                </div>
+                <!-- Grid column -->
+
+                <hr class="w-100 clearfix d-md-none" />
+
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3 text-black">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">
+                        Useful links
+                    </h6>
+                    <p>
+                        <a class="text-black">Your Account</a>
+                    </p>
+                    <p>
+                        <a class="text-black">Become an Affiliate</a>
+                    </p>
+                    <p>
+                        <a class="text-black">Shipping Rates</a>
+                    </p>
+                    <p>
+                        <a class="text-black">Help</a>
+                    </p>
+                </div>
+
+                <!-- Grid column -->
+                <hr class="w-100 clearfix d-md-none" />
+
+                <!-- Grid column -->
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3 text-black">
+                    <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+                    <p><i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+                    <p><i class="fas fa-envelope mr-3"></i> info@gmail.com</p>
+                    <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+                    <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+                </div>
+                <!-- Grid column -->
+            </div>
+            <!-- Grid row -->
+        </section>
+        <!-- Section: Links -->
+
+        <hr class="my-3">
+
+        <!-- Section: Copyright -->
+        <section class="p-3 pt-0">
+            <div class="row d-flex align-items-center">
+                <!-- Grid column -->
+                <div class="col-md-7 col-lg-8 text-center text-md-start text-black">
+                    <!-- Copyright -->
+                    <div class="p-3">
+                        © 2020 Copyright:
+                        <a class="text-black" href="https://mdbootstrap.com/"
+                        >MDBootstrap.com</a
+                        >
+                    </div>
+                    <!-- Copyright -->
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+                    <!-- Social Media Icons -->
+                    <a class="btn btn-outline-dark btn-floating m-1" role="button">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="btn btn-outline-dark btn-floating m-1" role="button">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="btn btn-outline-dark btn-floating m-1" role="button">
+                        <i class="fab fa-google"></i>
+                    </a>
+                    <a class="btn btn-outline-dark btn-floating m-1" role="button">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+                <!-- Grid column -->
+            </div>
+        </section>
+        <!-- Section: Copyright -->
+    </div>
+    <!-- Grid container -->
+</footer>
+<script src="path/to/sort-filter-products.js"></script>
+<script>
+    
+  var el = document.getElementById("wrapper");
+  var toggleButton = document.getElementById("menu-toggle");
+
+  toggleButton.onclick = function () {
+      el.classList.toggle("toggled");
+  };
+</script>
+<script>
+  const cartButton = document.getElementById("addToCartButton")
+  cartButton.addEventListener("click", function () {
+      const itemId = this.dataset.itemId;
+      console.log(itemId, "item id");
+      const body = {
+          itemId: itemId,
+      }
+      fetch("/addToCart", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body),
+      })
+          .then(response => response.json())
+          .then(response => {
+            
+          }).then(response=>{
+              swal("item added to cart", {
+                      icon: "success",
+                  });
+          })
+          .catch(error => {
+              console.log("error found",error);
+          });
+  })
+  
+
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const brandCheckboxes = document.querySelectorAll('.brand-checkbox');
+    const priceRadioButtons = document.querySelectorAll('input[name="processorGroup"]');
+    const showAllBrandsCheckbox = document.getElementById('showAllBrandsCheckbox');
+
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', filterProducts);
+    });
+
+    priceRadioButtons.forEach(button => {
+        button.addEventListener('change', filterProducts);
+    });
+
+    showAllBrandsCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+            brandCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+        filterProducts();
+    });
+
+    function filterProducts() {
+        const selectedBrands = Array.from(brandCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.dataset.brandName);
+
+        const selectedPriceRange = Array.from(priceRadioButtons)
+            .find(button => button.checked)
+            .id;
+
+        const products = document.querySelectorAll('.col-md-4');
+        products.forEach(product => {
+            const productBrand = product.dataset.productBrand;
+            let productPrice = parseFloat(product.dataset.priceRange);
+            const discountAmount = parseFloat(product.dataset.discountAmount);
+
+            // Update productPrice with discounted price
+            if (discountAmount > 0) {
+                productPrice -= discountAmount;
+            }
+
+            const brandFilterPassed = selectedBrands.length === 0 || selectedBrands.includes(productBrand);
+            const priceFilterPassed = applyPriceFilter(selectedPriceRange, productPrice);
+
+            if (brandFilterPassed && priceFilterPassed) {
+                product.style.display = 'block';
+            } else {
+                product.style.display = 'none';
+            }
+        });
+    }
+
+    function applyPriceFilter(selectedPriceRange, productPrice) {
+        switch (selectedPriceRange) {
+            case 'radioCoreI6':
+                return productPrice <= 500;
+            case 'radioCoreI3':
+                return productPrice >= 600 && productPrice <= 1500;
+            case 'radioCentron':
+                return productPrice >= 1600 && productPrice <= 2500;
+            case 'radioPentinum':
+                return productPrice >= 2600 && productPrice <= 3500;
+            default:
+                return true; // 'All Price' selected
+        }
+    }
+
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                showAllBrandsCheckbox.checked = false;
+                brandCheckboxes.forEach(otherCheckbox => {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+            filterProducts();
+        });
+    });
+});
+
+  </script>
+  
+
+
+  <%- include('footer') -%>
+  <body>
+  
+  </body>
+  </html>

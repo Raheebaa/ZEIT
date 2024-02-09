@@ -1,0 +1,315 @@
+<%- include('navbar') -%>
+  <%- include('header') -%>
+    <!-- content -->
+    <section class="py-5">
+      <div class="container">
+
+        <div class="row gx-5">
+          <aside class="col-lg-6">
+            <div class="border rounded-4 mb-3 d-flex justify-content-center " style="overflow: hidden;">
+
+              <a id="image" data-fslightbox="mygallery" class="rounded-4 zoom" data-type="image"
+                href="/upload/<%= products.ProductImage[0] %>">
+                <img
+                  style="max-width: 100%; max-height: 70vh; margin: auto;transform-origin: center center; object-fit: cover; cursor:crosshair ;"
+                  class="rounded-4 fit main-img" id="container" src="/upload/<%= products.ProductImage[0] %>"
+                  alt="<%= products.ProductName %>" />
+              </a>
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+              <% products.ProductImage.slice(0, 3).forEach((image, index)=> { %>
+                <a class="selected-image border mx-1 rounded-2 zoom" target="_blank" data-fslightbox="mygallery"
+                  data-type="image" href="/upload/<%= image %>" class="item-thumb">
+                  <img width="60" height="60" class="rounded-2" src="/upload/<%= image %>" />
+                </a>
+                <% }); %>
+            </div>
+          </aside>
+          <main class="col-lg-6">
+            <div class="ps-lg-3">
+              <!-- Add this div for displaying the error message -->
+
+
+              <h2 class="title text-dark">
+                <%= products.ProductName %>
+              </h2>
+              <div class="mb-3">
+                <!-- Display the original price with or without strikethrough based on the offer -->
+                <% if (catoffers && catoffers.length> 0) { %>
+                  <% const categoryOffer=catoffers.find(offer=> offer.categoryName === products.category.CategoryName);
+                    %>
+                    <% const offerPercentage=categoryOffer && categoryOffer.percentage> 0 ? categoryOffer.percentage :
+                      0; %>
+                      <% if (offerPercentage> 0) { %>
+                        <!-- Calculate the discounted price -->
+                        <% const discountedPrice=products.price - (products.price * offerPercentage) / 100; %>
+
+                          <!-- Display the discounted price in bold -->
+                          <span class="discounted-price" style="font-weight: bold;">₹<%= discountedPrice.toFixed(2) %>
+                          </span>
+
+                          <!-- Display the original price with a strikethrough -->
+                          <span class="original-price" style="text-decoration: line-through;">₹<%= products.price %>
+                          </span>
+
+                          <!-- Display the offer percentage as a bold label with green color -->
+                          <span class="offer-percentage" style="font-weight: bold; color: green;">(<%= offerPercentage
+                              %>% OFF)</span>
+                          <% } else { %>
+                            <!-- Display the original price without strikethrough -->
+                            ₹<%= products.price %>
+                              <% } %>
+                                <% } else { %>
+                                  <!-- Display the original price without strikethrough if there are no offers -->
+                                  ₹<%= products.price %>
+                                    <% } %>
+              </div>
+
+
+
+              <div class="row">
+                <dt class="col-3">Category:</dt>
+                <dd class="col-9">
+                  <%= products.category ? products.category.CategoryName :" hbch"%>
+                </dd>
+                <dt class="col-3">Brand:</dt>
+                <dd class="col-9">
+                  <%= products.brand ? products.brand.BrandName :"olddd"%>
+                </dd>
+                <dt class="col-3">Description:</dt>
+                <dd class="col-9">
+                  <%= products.Description %>
+                </dd>
+                <dt class="col-3">Stock:</dt>
+                <dd class="col-9">
+                  <% if (products.stock===0) { %>
+                    <h6 class="text-danger">Out of Stock</h6>
+                    <% } else { %>
+                      <h6 class="text-success">In Stock</h6>
+                      <% } %>
+                </dd>
+
+
+                <div class="row">
+                  <div class="col-3">Quantity:</div>
+                  <div class="col-9">
+                    <div class="input-group" style="width: 120px;">
+                      <button class="btn btn-outline-secondary" type="button"
+                        onclick="updateQuantity('<%= products._id %>', -1)">-</button>
+                      <input type="number" class="form-control" value="1" id="quantity<%= products._id %>" min="1"
+                        max="<%= products.stock %>" onchange="updateQuantity('<%= products._id %>', 0)">
+                      <button class="btn btn-outline-secondary" type="button"
+                        onclick="updateQuantity('<%= products._id %>', 1)">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="errorMessage" class="text-danger"></div>
+                <hr />
+
+                <!-- <a href="#" class="btn btn-warning shadow-0"> Buy now </a> -->
+                <!-- <a href="#" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart </a>  -->
+
+                <button class="btn" style="background-color: rgb(65, 82, 215);" id="addToCartButton"
+                  data-item-id="<%= products._id %>" <%=products.stock===0 ? 'disabled' : '' %>>Add to Cart</button>
+
+                
+              </div>
+              <h3 style="color: rgb(2, 47, 2);">Write a Review</h3>
+              <div>
+              
+                <form id="reviewForm" data-product-id="<%= products._id %>">
+                  <div style="margin-bottom: 10px;">
+                    <label for="comment" style="font-weight: bold;">Comment:</label><br>
+                    <textarea id="comment" name="comment" style="width: 100%; height: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                  </div>
+                  <button id="submitReviewButton" type="submit" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Submit Review</button>
+
+                </form>
+              </div>
+          </main>
+         
+          <div>
+           
+        </div>
+        
+      </div>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Add this before the closing </body> tag -->
+    <script src="path/to/jquery.min.js"></script>
+    <script src="path/to/jquery.elevateZoom-3.0.8.min.js"></script>
+  
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const reviewForm = document.getElementById('reviewForm');
+          const productId = reviewForm.dataset.productId;
+    
+          reviewForm.addEventListener('submit', function (event) {
+              event.preventDefault(); // Prevent the default form submission behavior
+    
+              const comment = document.getElementById('comment').value; // Get the comment from the form
+    
+              const formData = {
+                  productId: productId,
+                  comment: comment
+              };
+    
+              // Send a POST request to the server
+              fetch('/saveReview', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(formData)
+              })
+              .then(response => {
+                  if (response.ok) {
+                      return response.json();
+                  }
+                  throw new Error('Network response was not ok.');
+              })
+              .then(data => {
+                  // Handle success response from the server
+                  console.log(data);
+                  alert(data.message); // Display a success message
+                  // Optionally, you can redirect the user to another page or update the UI as needed
+              })
+              .catch(error => {
+                  // Handle error response from the server
+                  console.error('Error saving review:', error);
+                  alert('Failed to save review. Please try again....'); // Display an error message
+              });
+          });
+      });
+    </script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        fslightbox.init();
+      });
+
+      $(document).ready(function () {
+        $(".selected-image").click(function (e) {
+          e.preventDefault();
+          var newImageSrc = $(this).attr("href");
+          $("#image").attr("href", newImageSrc);
+          $("#image img").attr("src", newImageSrc);
+        });
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        fslightbox.init();
+      });
+    </script>
+
+    <script>
+      const container = document.getElementById("container");
+      const img = document.querySelector(".main-img");
+
+      container.addEventListener("mousemove", onZoom);
+      container.addEventListener("mouseover", onZoom);
+      container.addEventListener("mouseleave", offZoom);
+
+      function onZoom(e) {
+        const x = (e.clientX - e.target.offsetLeft) / container.offsetWidth * 100;
+        const y = (e.clientY - e.target.offsetTop) / container.offsetHeight * 100;
+
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = "scale(1.3)";
+      }
+
+      function offZoom(e) {
+        img.style.transformOrigin = `center center`;
+        img.style.transform = "scale(1)";
+      }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        $('.main-img').elevateZoom({
+          zoomType: "inner",
+          cursor: "crosshair",
+          zoomWindowFadeIn: 500,
+          zoomWindowFadeOut: 750,
+          lensFadeIn: 500,
+          lensFadeOut: 750,
+          easing: true,
+          scrollZoom: true,
+          zoomWindowWidth: 800,
+          zoomWindowHeight: 800,
+          zoomLevel: 9, // Adjust the zoom level according to your preference
+        });
+      });
+    </script>
+
+    <script>
+      var el = document.getElementById("wrapper");
+      var toggleButton = document.getElementById("menu-toggle");
+
+      toggleButton.onclick = function () {
+        el.classList.toggle("toggled");
+      };
+    </script>
+    <script>
+      const cartButton = document.getElementById("addToCartButton")
+      cartButton.addEventListener("click", function () {
+        const itemId = this.dataset.itemId;
+        const quantity = parseInt(document.getElementById(`quantity${itemId}`).value) || 1;  // Extract the quantity from the input field
+
+        const body = {
+          itemId: itemId,
+          quantity: quantity,
+
+        };
+
+        fetch("/addToCart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body),
+        })
+          .then(response => response.json())
+          .then(response => {
+            // Handle the response if needed
+          })
+          .then(response => {
+            swal("Item added to cart", {
+              icon: "success",
+            });
+
+
+            updateCartUI(itemId, response.totalQuantity);  // Update the cart UI with the new quantity
+          })
+          .catch(error => {
+            console.log("Error adding item to cart", error);
+          });
+      })
+
+      function updateCartUI(itemId, newQuantity) {
+        // Update the cart quantity display in the UI
+        var cartQuantityDisplay = document.getElementById('cartQuantityDisplay');
+        if (cartQuantityDisplay) {
+          cartQuantityDisplay.textContent = newQuantity;
+        }
+
+        // Update the quantity in the cart page if it's open
+        var cartQuantityInput = document.getElementById('cartQuantity' + itemId);
+        if (cartQuantityInput) {
+          cartQuantityInput.value = newQuantity;
+        }
+      }
+    </script>
+    <script>
+      // ... (your existing script for quantity update and other functionality) ...
+
+      // Calculate the discount amount based on the offer percentage
+      function calculateDiscountAmount(actualPrice, discountPercentage) {
+        const discountAmount = (actualPrice * discountPercentage) / 100;
+        return discountAmount.toFixed(2); // Adjust decimal places as needed
+      }
+    </script>
+
+
+    <%- include('footer')-%>

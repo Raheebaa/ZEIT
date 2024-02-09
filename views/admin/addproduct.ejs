@@ -1,0 +1,358 @@
+<%- include('header')-%>
+
+
+       
+<div class="col-md-3 col-lg-2 sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link active" href="/admin/admindash">
+                <i class="fa fa-home"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/banner">
+                <i class="fa fa-list"></i> Banner
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/product">
+                <i class="fa fa-product-hunt"></i> Products
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/category">
+                <i class="fa fa-list"></i> Category
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/category">
+                <i class="fa fa-list"></i> Brands
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/customers">
+                <i class="fa fa-users"></i> Customers
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/orders">
+                <i class="fa fa-bars"></i> Orders
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/coupon">
+                <i class="fa fa-bars"></i> Coupon
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/sales">
+                <i class="fa fa-line-chart"></i> Sales
+            </a>
+        </li>
+        <a class="list-group-item list-group-item-action bg-transparent second-text fw-bold"
+            data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+            aria-controls="collapseExample"><i class="fas fa-project-diagram me-2"></i>offers</a>
+        <div class="collapse mx-4 text" id="collapseExample">
+            <div class="offerLink"><a href="/admin/categoryOffers"> category offers</a><i
+                    class="fas fa-arrow-right"></i></div>
+    
+        </div>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/logout">
+                <i class="fa fa-sign-out"></i> Logout
+            </a>
+        </li>
+
+    </ul>
+</div>
+<%- include('footer') -%>
+<body>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <!-- ... (your existing code) ... -->
+
+      <!-- Page content -->
+      <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <h2 class="mb-4">Add Product</h2>
+
+        <!-- Add Product Form -->
+        <form action="/admin/addproduct" method="post" enctype="multipart/form-data" id="myForm">
+        
+          <div class="mb-3">
+            <label for="productName" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="name" name="ProductName">
+            <div  id="nameError"></div>
+          </div>
+          
+          <label for="isnewarrival"> New Arrivals</label>
+          <input type="checkbox" name="isNewArrival">
+
+          <div class="mb-3">
+            <div class="form-group">
+              <br>
+              <label for="category">Category:</label>
+              <select class="form-select bg-light" id="category" name="category" >
+                <option value="" selected disabled>Select a category</option>
+                <% category.forEach(function(categories) { %>
+                  <option value="<%=categories.CategoryName %>">
+                    <%=categories.CategoryName%>
+                  </option>
+                  <% }); %>
+              </select>
+              <div class="invalid-feedback" id="categoryError"></div>
+            </div><br>
+            <div  id="categoryError"></div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-group">
+              <br>
+              <label for="brandName">Brand Name:</label>
+              <select name="brands" class="form-select bg-light" id="brand" >
+                <option value="" selected disabled>Select a Brand</option>
+                <% brands.forEach(function(brand) { %>
+                  <option value="<%=brand.BrandName%>">
+                    <%=brand.BrandName%>
+                  </option>
+                  <% }); %>
+              </select>
+              <div  id="BrandError"></div>
+            </div><br>
+              
+          </div>
+
+          <div class="form-group">
+            <label for="Description">Product Description:</label>
+            <textarea class="form-control bg-light" name="Description" id="Description" rows="4"
+              placeholder="Enter product description" ></textarea>
+              <div  id="DescriptionError"></div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="stock" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock"  min="0">
+            <div  id="stockError"></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" class="form-control" id="price" name="price" min="0">
+            <div  id="priceError"></div>
+          </div>
+          
+          <!-- Add Product Form -->
+          <div class="bg-light">
+            <h3>Media</h3>
+
+            <div class="form-group my-2">
+              <label for="image1">Image 1:</label>
+              <input type="file" name="image1" class="form-control imageInput" id="imageInput1" accept="image/*" />
+              <div id="imagePreviewContainer1" class="image-preview-container">
+                <img src="" alt="Image 1" class="img-fluid imagePreview" style="max-height: 150px; width: auto; display: none;" id="previewImage1" />
+              </div>
+              <button type="button" class="btn btn-primary" id="cropImage1">Crop Image</button>
+              <button type="button" class="btn btn-primary" id="saveImage1">Save Image</button>
+            </div>
+            
+            <div class="form-group my-2">
+              <label for="image2">Image 2:</label>
+              <input type="file" name="image2" class="form-control imageInput" id="imageInput2" accept="image/*" />
+              <div id="imagePreviewContainer2" class="image-preview-container">
+                <img src="" alt="Image 2" class="img-fluid imagePreview" style="max-height: 150px; width: auto; display: none;" id="previewImage2" />
+              </div>
+              <button type="button" class="btn btn-primary" id="cropImage2">Crop Image</button>
+              <button type="button" class="btn btn-primary" id="saveImage2">Save Image</button>
+            </div>
+            
+            <div class="form-group my-2">
+              <label for="image3">Image 3:</label>
+              <input type="file" name="image3" class="form-control imageInput" id="imageInput3" accept="image/*" />
+              <div id="imagePreviewContainer3" class="image-preview-container">
+                <img src="" alt="Image 3" class="img-fluid imagePreview" style="max-height: 150px; width: auto; display: none;" id="previewImage3" />
+              </div>
+              <button type="button" class="btn btn-primary" id="cropImage3">Crop Image</button>
+              <button type="button" class="btn btn-primary" id="saveImage3">Save Image</button>
+            </div>
+            
+      
+        
+
+          <button type="submit" class="btn btn-primary">Save Product</button>
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var imageInputs = document.querySelectorAll('.imageInput');
+      var cropButtons = document.querySelectorAll('[id^="cropImage"]');
+      var saveButtons = document.querySelectorAll('[id^="saveImage"]');
+      var croppers = [];
+    
+      imageInputs.forEach(function (input, index) {
+        var previewContainer = document.getElementById('imagePreviewContainer' + (index + 1));
+        var previewImage = document.getElementById('previewImage' + (index + 1));
+        var cropper;
+    
+        input.addEventListener('change', function (event) {
+          var file = event.target.files[0];
+    
+          if (!file) {
+            return;
+          }
+    
+          if (cropper) {
+            cropper.destroy();
+          }
+    
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewContainer.style.display = 'block';
+    
+            cropper = new Cropper(previewImage, {
+              aspectRatio: 1, // Set the aspect ratio as needed
+              viewMode: 2,    // Set the view mode to cover the entire canvas
+            });
+    
+            croppers[index] = cropper; // Store the cropper instance
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    
+      cropButtons.forEach(function (button, index) {
+        button.addEventListener('click', function () {
+          var cropper = croppers[index];
+          if (cropper) {
+            // Get the cropped data
+            var croppedData = cropper.getData();
+            console.log('Cropped data:', croppedData);
+            // You can send the cropped data to the server using AJAX or include it in the form data
+          }
+        });
+      });
+      saveButtons.forEach(function (button, index) {
+  button.addEventListener('click', function () {
+    var cropper = croppers[index];
+    if (cropper) {
+      // Get the cropped canvas with a fixed size and aspect ratio
+      var croppedCanvas = cropper.getCroppedCanvas({
+        aspectRatio: NaN  // Set to NaN to maintain the aspect ratio
+      });
+      // Get the data URL of the cropped image
+      var croppedDataURL = croppedCanvas.toDataURL('image/jpeg');
+      console.log('Cropped image data URL:', croppedDataURL);
+      // You can send the data URL to the server using AJAX or handle it as needed
+      cropper.destroy();
+
+      var previewContainer = document.getElementById('imagePreviewContainer' + (index + 1));
+      previewContainer.style.display = 'none';
+    }
+  });
+});
+
+
+    });
+    </script>
+    
+  
+  
+
+  
+  <script>
+    console.log('Script executed');
+    document.getElementById('myForm').addEventListener('submit', async function (event) {
+        var productNameInput = document.getElementById('name');
+        var productCategoryInput = document.getElementById('category');
+        var productPriceInput = document.getElementById('price');
+        var productStockInput = document.getElementById('stock');
+        var productDescriptionInput = document.getElementById('Description');
+        var productBrandInput = document.getElementById('brand');
+
+        var nameError = document.getElementById('nameError');
+        var categoryError = document.getElementById('categoryError');
+        var priceError = document.getElementById('priceError');
+        var stockError = document.getElementById('stockError');
+        var descriptionError = document.getElementById('DescriptionError');
+        var brandError = document.getElementById('BrandError');
+
+        var isValid = true;
+
+        // Clear previous error messages
+        nameError.textContent = '';
+        categoryError.textContent = '';
+        priceError.textContent = '';
+        stockError.textContent = '';
+        descriptionError.textContent = '';
+        brandError.textContent = '';
+
+        // Check each validation rule
+        if (productNameInput.value.trim() === '') {
+            nameError.textContent = 'Please enter a name.';
+            nameError.style.display = 'block';
+            nameError.style.color = 'red';
+            isValid = false;
+        }
+
+        if (productDescriptionInput.value.trim() === '') {
+            descriptionError.textContent = 'Please enter a description.';
+            descriptionError.style.display = 'block';
+            descriptionError.style.color = 'red';
+            isValid = false;
+        }
+
+        if (productCategoryInput.value.trim() === '') {
+            categoryError.textContent = 'Please enter a category.';
+            categoryError.style.display = 'block';
+            categoryError.style.color = 'red';
+            isValid = false;
+        }
+
+        if (productBrandInput.value.trim() === '') {
+            brandError.textContent = 'Please enter a brand.';
+            brandError.style.display = 'block';
+            brandError.style.color = 'red';
+            isValid = false;
+        }
+
+        var priceValue = parseFloat(productPriceInput.value);
+        if (isNaN(priceValue) || priceValue <= 0) {
+            priceError.textContent = 'Please enter a valid positive price.';
+            priceError.style.color = 'red';
+            priceError.style.display = 'block';
+            isValid = false;
+        }
+
+        var stockValue = parseFloat(productStockInput.value);
+        if (isNaN(stockValue) || stockValue <= 0) {
+            stockError.textContent = 'Please enter a valid positive number.';
+            stockError.style.color = 'red';
+            stockError.style.display = 'block';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            console.log('Form validation failed. Stopping submission.');
+            event.preventDefault();
+        } else {
+            console.log('Form is valid. Submitting...');
+        }
+    });
+</script>
+
+  
+  <%- include('footer')-%>
+</body>
+
+
+  
