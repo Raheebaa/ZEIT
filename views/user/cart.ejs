@@ -72,17 +72,8 @@
     <p class="mb-2"><strong>&#x20B9;<%= item.productId && item.productId.discountAmount ? item.productId.discountAmount : (item.productId ? item.productId.price : 0) %></strong></p>
 </td>
 
-
-
                             <% const itemCategory = item.productId.categoryId; %>
-  <% const categoryOffer = catoffers.find(offer => offer.categoryId === itemCategory); %>
-
-
-
-
-
-
-                         
+                            <% const categoryOffer = catoffers.find(offer => offer.categoryId === itemCategory); %>
                           <div class="mb-3">
 
                           <td>
@@ -129,33 +120,9 @@
               </div>
             </div>
           </div>
-          <% function getCategoryOfferPercentage(categoryOffer, item) { %>
-  <% const offerPercentage = categoryOffer ? categoryOffer.percentage : 0; %>
-  <% const originalPrice = item.productId ? item.productId.price : 0; %>
-  <% const discountedPrice = originalPrice - (originalPrice * offerPercentage) / 100; %>
-  Discount Amount: &#x20B9;<%= discountedPrice.toFixed(2) %>
-<% } %>
+
           <div class="col-lg-3">
-            <div class="card mb-3 border shadow">
-              <div class="card-body">
-                <form onsubmit="applyCoupon(event)">
-                  <div class="form-group">
-                    <label class="form-label">Have coupon?</label>
-                    <div class="input-group">
-                      <input type="text" class="form-control border" id="couponCodeInput" placeholder="Coupon code" />
-                      <button type="button" onclick="applyCoupon()">Apply Coupon</button>
-
-
-
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-
-
-
+           
             <div class="d-flex justify-content-between">
               <p class="mb-2">Total Quantity:</p>
               <p class="mb-2" id="totalQuantity"><strong><%= totalQuantity %></strong></p>
@@ -440,42 +407,7 @@
       }
 
     </script>
-    <script>
-    function applyCoupon() {
-        const couponCodeInput = document.getElementById('couponCodeInput');
-        const couponCode = couponCodeInput.value;
-
-        fetch('/applyCoupon', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                couponCode: couponCode,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the total amount on the client side
-                const totalAmountElement = document.getElementById('tax');
-                if (totalAmountElement) {
-                    totalAmountElement.innerHTML = `<strong>&#x20B9;${data.updatedTotalAmount.toFixed(1)}</strong>`;
-                }
-
-                // Optionally, you can update other UI elements here
-                swal("Coupon Applied", "Your total amount has been updated.", "success");
-            } else {
-                console.error('Failed to apply coupon:', data.message);
-                swal("Error", "Failed to apply coupon. Please try again.", "error");
-            }
-        })
-        .catch(error => {
-            console.error('Error applying coupon:', error);
-            swal("Error", "An error occurred while applying the coupon. Please try again.", "error");
-        });
-    }
-</script>
+    
 </body>
 
 </html>

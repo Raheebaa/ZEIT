@@ -94,4 +94,5 @@ router.post('/user/addmoneytowallet', userAuth.verifyuser, orderController.addmo
 
 router.post('/downloadinvoice', userAuth.verifyuser, orderController.generateInvoices)
 router.get('/downloadinvoice/:orderId', userAuth.verifyuser, orderController.downloadInvoice)
+router.post('/submit-review',userAuth.verifyuser,orderController.reviewsubmit)
 module.exports = router;

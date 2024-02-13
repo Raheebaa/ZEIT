@@ -36,8 +36,6 @@
             <li class="nav-item">
               <a class="nav-link" href="#">About</a>
             </li>
-
-
             <div class="container-fluid">
               <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
                 <ul class="navbar-nav">
@@ -46,31 +44,18 @@
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Brands
                     </a>
-                    <div class="dropdown-menu transparent-dropdown" aria-labelledby="navbarDarkDropdownMenuLink">
-                      <% brands.forEach(brand=> { %>
-                        <% if (!brand.isBlocked) { %>
-                          <a class="dropdown-item" href="#">
-                            <%= brand.BrandName %>
-                          </a>
-                          <% } %>
-                            <% }) %>
-                    </div>
+
                   </li>
                 </ul>
               </div>
             </div>
             <%- include('footer') -%>
 
-
-
-
               <li class="nav-item">
                 <a class="nav-link" href="#">Contacts</a>
               </li>
           </ul>
-
           </ul>
-
           <form class="custom-form d-flex ms-auto">
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
@@ -89,11 +74,7 @@
             <a href="/profile" class="border rounded py-1 px-3 nav-link d-flex align-items-center">
               <i class="fas fa-user m-1 me-md-2"></i>
             </a>
-
-
           </div>
-
-
         </div>
       </div>
     </nav>
@@ -190,10 +171,6 @@
 
 
                 <br>
-                <!-- <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal" style="width: 200px;">
-            Add Address
-          </a> -->
-
 
                 <a href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat"><button
                     class="btn btn-primary profile-button rounded-0 px-4 m-4" type="button">
@@ -207,19 +184,19 @@
 
             <div class="col-md-3">
               <div class="card mb-3 border shadow">
-                <div class="card-body">
-                  <fieldset>
-                    <div id="couponFormContainer">
+                <div class="card mb-3 border shadow">
+                  <div class="card-body">
+                    <form onsubmit="applyCoupon(event)">
                       <div class="form-group">
                         <label class="form-label">Have coupon?</label>
                         <div class="input-group">
-                          <input type="text" class="form-control border" name="couponCode" id="couponCode"
+                          <input type="text" class="form-control border" id="couponCodeInput"
                             placeholder="Coupon code" />
-                          <button type="button" class="btn btn-light border" onclick="applyCoupon()">Apply</button>
+                          <button type="button" onclick="applyCoupon()">Apply Coupon</button>
                         </div>
                       </div>
-                    </div>
-                  </fieldset>
+                    </form>
+                  </div>
                 </div>
               </div>
 
@@ -230,9 +207,18 @@
                     <p class="mb-2 fw-bold">₹<%= TotalPrice %>
                     </p>
                   </div>
+                  <div>
+                    <p class="mb-2">Discount amount:</p>
+                    <p class="mb-2 fw-bold"><span id="discountAmount"></span></p>
+                  </div>
+                  <div>
+                    <p class="mb-2">Updated amount:</p>
+                    <p class="mb-2 fw-bold"><span id="updatedTotalAmount"></span></p>
+                  </div>
 
                 </div>
               </div>
+
 
             </div>
           </div>
@@ -261,9 +247,6 @@
                   Pay Using Wallet
                 </label>
               </div>
-
-
-
               <!-- Add the "Pay Using Wallet" radio button here -->
 
               <div class="justify-content-center">
@@ -418,76 +401,123 @@
             // Handle error accordingly
           }
         });
-
         function razorpay(razorpayOrder, savedOrder, successCallback) {
-    try {
-      if (!razorpayOrder || !razorpayOrder.id || !razorpayOrder.amount || !razorpayOrder.currency) {
-        throw new Error('Invalid Razorpay order details');
-      }
+          try {
+            if (!razorpayOrder || !razorpayOrder.id || !razorpayOrder.currency) {
+              throw new Error('Invalid Razorpay order details');
+            }
 
-      var options = {
-        "key": "rzp_test_9oVCk3W2kwsPv6",
-        "amount": razorpayOrder.amount,
-        "currency": razorpayOrder.currency,
-        "name": "zeit",
-        "description": "Test Transaction",
-        "image": "",
-        "order_id": razorpayOrder.id,
-        "handler": function (response) {
-          console.log(response.razorpay_payment_id);
-          console.log(response.razorpay_order_id);
-          console.log(response.razorpay_signature);
-          verifyPayment(response, savedOrder);
-          if (response.razorpay_payment_id) {
-            // If payment is successful, call the successCallback function
-            successCallback();
+            // Default amount from razorpayOrder
+            let amount = razorpayOrder.amount;
+
+            // Check if there's an updated total amount element
+            const updatedTotalAmountElement = document.getElementById('updatedTotalAmount');
+            if (updatedTotalAmountElement) {
+              const updatedAmount = parseFloat(updatedTotalAmountElement.innerText);
+              if (!isNaN(updatedAmount)) {
+                // Convert to paisa (Razorpay accepts amount in paisa)
+                amount = updatedAmount * 100;
+              }
+            }
+
+            var options = {
+              "key": "rzp_test_9oVCk3W2kwsPv6",
+              "amount": amount,
+              "currency": razorpayOrder.currency,
+              "name": "zeit",
+              "description": "Test Transaction",
+              "image": "",
+              "order_id": razorpayOrder.id,
+              "handler": function (response) {
+                console.log(response.razorpay_payment_id);
+                console.log(response.razorpay_order_id);
+                console.log(response.razorpay_signature);
+                verifyPayment(response, savedOrder);
+                if (response.razorpay_payment_id) {
+                  // If payment is successful, call the successCallback function
+                  successCallback();
+                }
+              },
+              "notes": {
+                "address": "Razorpay Corporate Office"
+              },
+              "theme": {
+                "color": "#BCC33E"
+              }
+            };
+
+            var rzp1 = new Razorpay(options);
+
+            rzp1.open();
+
+            rzp1.on('payment.success', function (response) {
+              console.log('Razorpay Payment Success:', response);
+              verifyPayment(response, savedOrder);
+              successCallback();  // Call the successCallback function here
+              window.location = '/ordersuccess';
+            });
+
+
+            rzp1.on('payment.failed', function (response) {
+              console.error('Razorpay Payment Failed:', response.error);
+              // Handle payment failure if needed
+            });
+
+          } catch (error) {
+            console.error('Error initializing Razorpay:', error);
+            // Handle error accordingly
           }
-        },
-        "notes": {
-          "address": "Razorpay Corporate Office"
-        },
-        "theme": {
-          "color": "#BCC33E"
         }
-      };
+        function verifyPayment(payment, orderDetails) {
+          fetch("/user/verifyPayment", {
+            method: "POST",
+            body: JSON.stringify({ payment, orderDetails }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
 
-      var rzp1 = new Razorpay(options);
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                window.location = '/ordersuccess';
+              }
+            })
+        }
+      </script>
+      <script>
+        function applyCoupon() {
+          const couponCodeInput = document.getElementById('couponCodeInput');
+          const couponCode = couponCodeInput.value;
 
-      rzp1.open();
+          fetch('/applyCoupon', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              couponCode: couponCode,
+            }),
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Update the discount amount and updated total amount elements
+                document.getElementById('discountAmount').innerText = data.discountAmount.toFixed(2);
+                document.getElementById('updatedTotalAmount').innerText = data.updatedTotalAmount.toFixed(2);
+                // Optionally, you can update other UI elements here
+                swal("Coupon Applied", "Your total amount has been updated.", "success");
+              } else {
+                console.error('Failed to apply coupon:', data.message);
+                swal("Error", "Failed to apply coupon. Please try again.", "error");
+              }
+            })
+            .catch(error => {
+              console.error('Error applying coupon:', error);
+              swal("Error", "An error occurred while applying the coupon. Please try again.", "error");
+            });
+        }
 
-      rzp1.on('payment.success', function (response) {
-        console.log('Razorpay Payment Success:', response);
-        verifyPayment(response, savedOrder);
-        successCallback();  // Call the successCallback function here
-        window.location = '/ordersuccess';
-      });
-
-      rzp1.on('payment.failed', function (response) {
-        console.error('Razorpay Payment Failed:', response.error);
-        // Handle payment failure if needed
-      });
-
-    } catch (error) {
-      console.error('Error initializing Razorpay:', error);
-      // Handle error accordingly
-    }
-  }
-  function verifyPayment(payment,orderDetails){
-    fetch("/user/verifyPayment",{
-      method:"POST",
-      body:JSON.stringify({payment,orderDetails}),
-      headers: {
-          'Content-Type': 'application/json',
-        },
-
-    })
-    .then(res=>res.json())
-    .then(data=>{
-      if(data.success){
-        window.location ='/ordersuccess';
-      }
-    })
-  }
       </script>
 
 </html>

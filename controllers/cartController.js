@@ -78,9 +78,11 @@ module.exports = {
     
                     existingItem.quantity = newQuantity; // Update the quantity
                 } else {
-                    const product = await productUpload.findById(productId);
-                     const Price = product ? product.price : 0;
-                    userCart.items.push({ productId, quantity: quantity, Price: Price });
+                    // Populate the productId field to retrieve product details including discountAmount
+                    const product = await productUpload.findById(productId); // Remove .populate('productId')
+                    const Price = product ? product.price : 0;
+                    const discountAmount = product ? product.discountAmount : 0;
+                    userCart.items.push({ productId, quantity: quantity, Price: Price, discountAmount: discountAmount });
                 }
             }
     
@@ -100,6 +102,7 @@ module.exports = {
             res.status(500).json({ error: 'Internal server error' });
         }
     },
+    
     
     
     removeCart: async (req, res) => {

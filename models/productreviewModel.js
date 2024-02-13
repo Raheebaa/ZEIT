@@ -3,15 +3,18 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // Reference to the Product model
-    required: true
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Reference to the User model
+    ref: 'Product',
     required: true
   },
   comment: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number, // Add a rating field to save the rating value
+    required: true
+  },
+  username: {
     type: String,
     required: true
   },

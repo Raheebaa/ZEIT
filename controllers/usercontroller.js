@@ -15,6 +15,7 @@ const user = require("../models/users");
 const categoryoffer=require('../models/categoryOffer')
 const productoffer= require('../models/productOffer')
 const ReferalData = require("../models/referralOfferModal");
+const Review = require("../models/productreviewModel");
 const saltRounds = 10;
 
 
@@ -200,7 +201,6 @@ const userController = {
       res.status(500).send('Internal Server Error');
     }
   },
-
   validateOtp: async (req, res) => {
     try {
         // Retrieve necessary data for rendering the page
@@ -225,8 +225,9 @@ const userController = {
         const referralId = userController.generateRefferalId();
         console.log(referralId, 'iiiiiiiiii');
 
-        // Check if referral ID exists and handle referral bonus
+        // Check if referral ID exists in the session
         if (req.session.referralId) {
+        
             const referalData = await ReferalData.findOne();
             console.log(referalData, 'reffffffffff');
             if (referalData && referalData.Status === true) {
@@ -280,7 +281,7 @@ const userController = {
             { new: true }
         );
 
-        console.log('New user saved:', updatedNewUser);
+       // console.log('New user saved:', updatedNewUser);
 
         // Redirect user to home page after successful signup
         req.session.user = newUser.username;
@@ -290,7 +291,6 @@ const userController = {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 },
-
 
   getresentOtp: async (req, res) => {
     try {
@@ -437,11 +437,10 @@ console.log(prooffer,'prooffrrrrrr');
     }
 },
 
-  
 showProductDeails: async (req, res) => {
   try {
     const brands = await Brands.find({});
-    const product = await productmodel.find({})
+    const product = await productmodel.find({});
     const productId = req.params.productId;
     const categories = await Category.find({});
     const products = await productmodel.findOne({ _id: productId }).populate('ProductName').populate('category').populate('brand');
@@ -460,11 +459,10 @@ showProductDeails: async (req, res) => {
         discountAmount = products.price - discountedPrice;
       }
     }
-console.log(discountAmount,'discountamountttt');
-    // Update the product document with the discount amount
+    const reviews = await Review.find({ productId }).exec();
     await productmodel.findByIdAndUpdate(productId, { discountAmount: discountAmount });
 
-    res.render('./user/productdetails', { products, categories, brands, catoffers });
+    res.render('./user/productdetails', { products, categories, brands, catoffers, reviews });
   } catch (error) {
     console.log(error, 'error');
   }
@@ -544,8 +542,6 @@ console.log(discountAmount,'discountamountttt');
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
-
-
 
   editAddress: async (req, res) => {
     try {

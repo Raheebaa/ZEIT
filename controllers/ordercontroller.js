@@ -6,13 +6,14 @@ const productUpload = require("../models/productSchema");
 const Return = require("../models/return");
 const walletmodel = require('../models/wallet')
 const razorpay = require('razorpay');
-
+const Review=require('../models/productreviewModel')
 const { createHmac } = require("crypto");
 const { generateInvoice } = require("../services/easyInvoice");
 
 const { default: mongoose } = require("mongoose");
 const Orders = require("../models/orderModel");
 const Razorpay = require('razorpay');
+const Coupon = require("../models/coupen");
 
 const rzp = new Razorpay({
   key_id: "rzp_test_9oVCk3W2kwsPv6",
@@ -48,14 +49,14 @@ module.exports = {
       const userData = await Users.findOne({ email: req.session.email });
       const Cart = await cart.findOne({ userId: userData._id });
       const userWallet = await walletmodel.findOne({ userId: userData._id });
-
+  
       if (!Cart) {
         return res.render("user/checkoutPage", { error: "Cart not found" });
       }
 
-      // Make sure to pass the correct variable for TotalPrice and wallet balance
+    
       const TotalPrice = Cart.TotalAmount;
-      //console.log(TotalPrice, '909090909090909009999');
+     
       const walletBalance = userWallet ? userWallet.balance : 0;
       // console.log(walletBalance, 'wwwwwwwwwwwwwwwwwww');
       req.session.user = userData;
@@ -67,41 +68,44 @@ module.exports = {
   },
   placeOrder: async (req, res) => {
     try {
-      const email = req.session.email;
-      const userData = await Users.findOne({ email: email });
+        const email = req.session.email;
+        const userData = await Users.findOne({ email: email });
 
-      if (!userData || !userData._id) {
-        return res.status(400).json({
-          success: false,
-          message: "User data is missing or invalid",
-        });
-      }
+        if (!userData || !userData._id) {
+            return res.status(400).json({
+                success: false,
+                message: "User data is missing or invalid",
+            });
+        }
 
-      req.session.user = userData;
+        req.session.user = userData;
 
-      const userId = userData._id;
-      console.log(userId, 'USERID');
-      const Cart = await cart.findOne({ userId: userId });
+        const userId = userData._id;
+        console.log(userId, 'USERID');
+        const Cart = await cart.findOne({ userId: userId });
 
-      if (!Cart || !Cart.TotalAmount) {
-        return res.status(400).json({
-          success: false,
-          message: "Cart data is missing or invalid",
-        });
-      }
+        if (!Cart || !Cart.TotalAmount) {
+            return res.status(400).json({
+                success: false,
+                message: "Cart data is missing or invalid",
+            });
+        }
 
-      const userWallet = await walletmodel.findOne({ userId: userId });
+        const userWallet = await walletmodel.findOne({ userId: userId });
 
-      const TotalPrice = Cart.TotalAmount;
-      console.log(TotalPrice);
+        let TotalPrice = Cart.TotalAmount; // Set TotalPrice to the default Cart total amount
 
-      let walletBalance = userWallet ? userWallet.balance : 0; // Use let instead of const
+        const selectedAddressId = req.body.selectedAddress;
+        const paymentMethod = req.body.selectedPaymentMethod;
 
-      const selectedAddressId = req.body.selectedAddress;
-      const paymentMethod = req.body.selectedPaymentMethod;
+        let savedOrder;
 
-      let savedOrder;
-
+        // Check if there is an updatedTotalAmount sent from the frontend
+        const updatedTotalAmount = parseFloat(req.body.updatedTotalAmount);
+        if (!isNaN(updatedTotalAmount) && updatedTotalAmount > 0) {
+            TotalPrice = updatedTotalAmount;
+        }
+        let walletBalance = userWallet ? userWallet.balance : 0;
       // Check if the selected payment method is "wallet"
       if (paymentMethod === "wallet") {
         if (TotalPrice > walletBalance) {
@@ -251,21 +255,23 @@ module.exports = {
       return res.render("user/Orders", { error: "Error fetching data" });
     }
   },
-
   orderDetails: async (req, res) => {
     try {
       const user = await Users.findOne({ email: req.session.email })
       const orderId = req.params.id;
-      //console.log(orderId);
       const brands = await Brands.find({});
       const orderData = await order.find({ _id: orderId }).populate('Items.productId');
-      //console.log(orderData, "*****************************");
-      res.render('user/orderDetails', { orderData, userData: user, brands })
+  
+      // Extract productId from orderData
+      const productId = orderData[0].Items[0].productId._id; // Adjust according to your data structure
+  console.log(productId,'proidd');
+      res.render('user/orderDetails', { orderData, userData: user, brands, productId });
     } catch (error) {
       console.error("Error in orders:", error);
       return res.render("user/orderDetails", { error: "Error fetching data" });
     }
   },
+  
   cancelOrder: async (req, res) => {
     try {
       const orderId = req.params.id;
@@ -551,7 +557,7 @@ module.exports = {
       const userData = await Users.findOne({ email: email });
       const userId = userData._id;
 
-      // Parse the amount from the request body and convert it to the smallest currency unit
+      
       const amountInRupees = req.body.amount;
       const amountInPaise = amountInRupees * 100; // Convert rupees to paise
 
@@ -623,18 +629,16 @@ module.exports = {
       });
     }
   },
-
-  // In your generateInvoices function, ensure proper error handling and consistent file paths
-  generateInvoices: async (req, res) => {
+  generateInvoices :async (req, res) => {
     try {
       const { orderId } = req.body;
-
+  
       const orderDetails = await order
         .find({ _id: orderId })
         .populate("Items.productId");
-
+  
       const ordersId = orderDetails[0]._id;
-
+  
       if (orderDetails) {
         const invoicePath = await generateInvoice(orderDetails);
         res.json({
@@ -654,12 +658,11 @@ module.exports = {
         .json({ success: false, message: "Error in generating the invoice" });
     }
   },
-
-  downloadInvoice :async (req, res) => {
+   downloadInvoice :async (req, res) => {
     try {
       const id = req.params.orderId;
   
-      const filePath = `public/invoices/invoice-${id}.pdf`;
+      const filePath = `public/invoices/ivoice-${id}.pdf`;
       console.log("downloaded the pdf invoice");
       res.download(filePath, `invoice.pdf`);
     } catch (error) {
@@ -668,8 +671,25 @@ module.exports = {
         .status(500)
         .json({ success: false, message: "Error in downloading the invoice" });
     }
-  }
-
+  },
+  reviewsubmit:async (req, res) => {
+    try {
+      // Extract product ID and comment from the request body
+      const { productId, comment, rating, username } = req.body;
+      console.log(req.body,'req');
+      
+      const review = new Review({ productId, comment, rating, username });
+      console.log(review,'reviw');
+      await review.save();
+  
+      // Send a success response to the client
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      // Send an error response to the client
+      res.status(500).json({ success: false, message: 'Failed to submit review' });
+    }
+  },
 
 
 }

@@ -43,12 +43,12 @@ const productSchema = new mongoose.Schema({
     enum: ['cod', 'online', 'wallet'],
     default: 'cod',
   },
-  discountAmount: {  // Add the discountAmount field here
+  discountAmount: { 
     type: Number,
-    default: 0,  // Default to 0 if no discount is applied
+    default: 0, 
     validate: {
       validator: function (value) {
-        return value >= 0 && value <= this.price; // Ensuring discountAmount is positive and less than or equal to price
+        return value >= 0 && value <= this.price; 
       },
       message: 'Discount amount must be a positive number and less than or equal to the price.'
     }

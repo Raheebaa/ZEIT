@@ -410,24 +410,24 @@
                 }
               }
             </script>
-            <script>
-              async function generateAndDownloadInvoice(orderId) {
+          <script>
+            async function generateAndDownloadInvoice(orderId) {
                 try {
-                  const response = await fetch('/downloadinvoice', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ orderId })
-                  });
-                  if (response.ok) {
-                    console.log("inside response");
-                    window.location.href = `/downloadinvoice/${orderId}`;
-                  }
+                    const response = await fetch('/downloadinvoice', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify({ orderId }) 
+                    });
+                    if (response.ok) {
+                      console.log("inside response");
+                        window.location.href =  `/downloadinvoice/${orderId}`;
+                    }
                 } catch (error) {
-                  console.error('Error in downloading the invoice:', error);
+                    console.error('Error in downloading the invoice:', error);
                 }
-              }
+            }
             </script>
 </body>
 

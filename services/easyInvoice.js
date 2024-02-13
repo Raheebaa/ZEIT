@@ -14,10 +14,7 @@ module.exports = {
                 },
     
                 "images": {
-                  
                     // "logo": fs.readFileSync(path.join(__dirname, '..', 'public', 'assets', 'logoPhonebazar.png'), 'base64'),
-                   
-    
                 },
                 "sender": {
                     "company": "Horo",
@@ -42,7 +39,7 @@ module.exports = {
                     "quantity": product.quantity,
                     "description": product.productId.ProductName, 
                     "tax-rate": 18,
-                    "price": product.productId.DiscountAmount
+                    "price": product.productId.price
                 })) : [],
                 
     

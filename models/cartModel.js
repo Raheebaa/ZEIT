@@ -18,6 +18,10 @@ const cartSchema = new mongoose.Schema({
             type: Number,
             default:1
         },
+        discountAmount: {  // Add the discountAmount field from product schema
+            type: Number,
+            default: 0
+        },
         TAX: {
             type: Number,
             default: 0,
@@ -68,8 +72,7 @@ cartSchema.statics.updateQuantity = async function (itemId, newQuantity) {
       }
   
       const cartItem = await Cart.findOne({ "items._id": itemId });
-      console.log(cartItem, '............itememememememememememememmememe');
-  
+
       if (!cartItem) {
         throw new Error('Cart item not found');
       }
