@@ -57,7 +57,7 @@ router.get('/getCartInfo', cartController.getCartInfo);
 router.post('/updateCartQuantity', cartController.updateCartQuantity)
 //router.post('/user/AddToCart/:id',cartController.addlistToCart)
 // router.post('/user/updatequantity', cartController.updatequantity)
-
+router.post('/makePurchase',cartController. makePurchase);
 
 //=======================================================profile======================================================
 

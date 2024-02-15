@@ -257,21 +257,38 @@ module.exports = {
   },
   orderDetails: async (req, res) => {
     try {
-      const user = await Users.findOne({ email: req.session.email })
-      const orderId = req.params.id;
-      const brands = await Brands.find({});
-      const orderData = await order.find({ _id: orderId }).populate('Items.productId');
-  
-      // Extract productId from orderData
-      const productId = orderData[0].Items[0].productId._id; // Adjust according to your data structure
-  console.log(productId,'proidd');
-      res.render('user/orderDetails', { orderData, userData: user, brands, productId });
+        const user = await Users.findOne({ email: req.session.email })
+        const orderId = req.params.id;
+        const brands = await Brands.find({});
+        const orderData = await Orders.find({ _id: orderId }).populate('Items.productId');
+        
+        // Extract productId from orderData
+        const productId = orderData[0].Items[0].productId._id; // Adjust according to your data structure
+console.log(productId,'id');
+        // Assuming you have these fields in your order schema
+        const discountAmount = orderData[0].discountAmount;
+        console.log(discountAmount,'dis');
+        const updatedTotalAmount = orderData[0].updatedTotalAmount;
+console.log(updatedTotalAmount);
+        // Check if a coupon was applied to this order
+        const appliedCoupon = orderData[0].appliedCoupon; // Adjust according to your data structure
+
+        res.render('user/orderDetails', { 
+            orderData, 
+            userData: user, 
+            brands, 
+            productId, 
+            discountAmount, 
+            updatedTotalAmount,
+            appliedCoupon // Pass appliedCoupon to the frontend
+        });
     } catch (error) {
-      console.error("Error in orders:", error);
-      return res.render("user/orderDetails", { error: "Error fetching data" });
+        console.error("Error in orders:", error);
+        return res.render("user/orderDetails", { error: "Error fetching data" });
     }
-  },
-  
+},
+
+
   cancelOrder: async (req, res) => {
     try {
       const orderId = req.params.id;

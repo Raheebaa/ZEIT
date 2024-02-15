@@ -21,14 +21,14 @@
   <link rel="stylesheet" href="/user/css/profile.css">
   <style>
     .star {
-  font-size: 24px;
-  cursor: pointer;
-}
+      font-size: 24px;
+      cursor: pointer;
+    }
 
-.selected {
-  color: #ffd700; /* Color for selected stars */
-}
-
+    .selected {
+      color: #ffd700;
+      /* Color for selected stars */
+    }
   </style>
 </head>
 
@@ -227,8 +227,6 @@
                               <div class="col-md-2 mb-4">
 
                               </div>
-
-
                               <% const taxRate=0.01; const itemPrice=x.productId?.price* x.quantity || 0; const
                                 tax=itemPrice * taxRate; const totalPrice=itemPrice + tax; %>
                                 <% if (x.productId && x.productId.ProductImage &&
@@ -240,14 +238,22 @@
                                     <% } %>
                                       <p>ProductName: <%= x.productId.ProductName %>
                                       </p>
-                                      <p>Item Price: $<%= x.productId?.price %>
+                                      <p>Item Price: $<%= x.productId?.discountAmount ? x.productId.discountAmount :
+                                          x.productId.price %>
                                       </p>
-                                      <p>Tax: $<%= tax.toFixed(2) %>
-                                      </p>
-                                      <p style="color: rgb(3, 5, 50);">Quantity : <%= x.quantity %>
-                                          <p> Total Price₹ <%= totalPrice %>
-                                          </p>
 
+                                      <p style="color: rgb(3, 5, 50);">Quantity : <%= x.quantity %>
+
+                                      </p>
+                             
+                                      <% if (appliedCoupon) { %>
+                                        <div class="d-flex justify-content-between mb-3">
+                                          <p class="text-muted mb-0"><b>Applied Coupon Code: <%= appliedCoupon.code %>
+                                                </b></p>
+                                          <p class="text-muted mb-0"><b>Discount Amount: ₹ <%=
+                                                appliedCoupon.discountAmount.toFixed(2) %></b></p>
+                                        </div>
+                                        <% } %>
 
                                           <% if(x.status=="Return" ){%>
                                             <h5 style="color: brown;">item returned</h5>
@@ -284,7 +290,7 @@
                                                       <span class="star" data-value="5">★</span>
                                                     </div>
                                                     <input type="hidden" id="rating" name="rating" value="0">
-                                               
+
                                                   </div>
                                                   <button id="submitReviewButton" type="button"
                                                     style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Submit
@@ -447,90 +453,90 @@
     <script>
       const submitReviewButton = document.getElementById('submitReviewButton');
 
-submitReviewButton.addEventListener('click', async () => {
-  const comment = document.getElementById('comment').value;
-  const productId = document.getElementById('reviewForm').dataset.productId;
-  const rating = parseInt(document.getElementById('rating').value); // Get the rating value
-  const username = '<%= userData.username %>'; // Assuming userData is available in your template
+      submitReviewButton.addEventListener('click', async () => {
+        const comment = document.getElementById('comment').value;
+        const productId = document.getElementById('reviewForm').dataset.productId;
+        const rating = parseInt(document.getElementById('rating').value); // Get the rating value
+        const username = '<%= userData.username %>'; // Assuming userData is available in your template
 
-  try {
-    const response = await fetch('/submit-review', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ productId, comment, rating, username }), // Include the username in the request body
-    });
+        try {
+          const response = await fetch('/submit-review', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId, comment, rating, username }), // Include the username in the request body
+          });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
 
-    const data = await response.json();
+          const data = await response.json();
 
-    if (data.success) {
-      swal('Success', 'Review submitted successfully!', 'success');
-    } else {
-      alert('Failed to submit review. Please try again later.');
-    }
-  } catch (error) {
-    console.error('Error submitting review:', error);
-  }
-});
-
-      document.addEventListener('DOMContentLoaded', function () {
-  const ratingStars = document.querySelectorAll('.star');
-  const ratingInput = document.getElementById('rating');
-
-  ratingStars.forEach(star => {
-    star.addEventListener('click', () => {
-      const ratingValue = parseInt(star.getAttribute('data-value'));
-      ratingInput.value = ratingValue;
-
-      // Highlight the selected stars
-      ratingStars.forEach(s => {
-        const value = parseInt(s.getAttribute('data-value'));
-        if (value <= ratingValue) {
-          s.classList.add('selected');
-        } else {
-          s.classList.remove('selected');
+          if (data.success) {
+            swal('Success', 'Review submitted successfully!', 'success');
+          } else {
+            alert('Failed to submit review. Please try again later.');
+          }
+        } catch (error) {
+          console.error('Error submitting review:', error);
         }
       });
-    });
-  });
 
-  const submitReviewButton = document.getElementById('submitReviewButton');
+      document.addEventListener('DOMContentLoaded', function () {
+        const ratingStars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
 
-  submitReviewButton.addEventListener('click', async () => {
-    const comment = document.getElementById('comment').value;
-    const productId = document.getElementById('reviewForm').dataset.productId;
-    const rating = parseInt(document.getElementById('rating').value); // Get the rating value
+        ratingStars.forEach(star => {
+          star.addEventListener('click', () => {
+            const ratingValue = parseInt(star.getAttribute('data-value'));
+            ratingInput.value = ratingValue;
 
-    try {
-      const response = await fetch('/submit-review', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, comment, rating }), // Include the rating in the request body
+            // Highlight the selected stars
+            ratingStars.forEach(s => {
+              const value = parseInt(s.getAttribute('data-value'));
+              if (value <= ratingValue) {
+                s.classList.add('selected');
+              } else {
+                s.classList.remove('selected');
+              }
+            });
+          });
+        });
+
+        const submitReviewButton = document.getElementById('submitReviewButton');
+
+        submitReviewButton.addEventListener('click', async () => {
+          const comment = document.getElementById('comment').value;
+          const productId = document.getElementById('reviewForm').dataset.productId;
+          const rating = parseInt(document.getElementById('rating').value); // Get the rating value
+
+          try {
+            const response = await fetch('/submit-review', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ productId, comment, rating }), // Include the rating in the request body
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+              swal('Success', 'Review submitted successfully!', 'success');
+            } else {
+              alert('Failed to submit review. Please try again later.');
+            }
+          } catch (error) {
+            console.error('Error submitting review:', error);
+          }
+        });
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        swal('Success', 'Review submitted successfully!', 'success');
-      } else {
-        alert('Failed to submit review. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-    }
-  });
-});
 
 
     </script>

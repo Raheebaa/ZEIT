@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Product = require("../models/productSchema");
 const cartSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -18,7 +18,7 @@ const cartSchema = new mongoose.Schema({
             type: Number,
             default:1
         },
-        discountAmount: {  // Add the discountAmount field from product schema
+        discountAmount: {  
             type: Number,
             default: 0
         },
@@ -38,11 +38,22 @@ cartSchema.methods.calculateTotalPrice = async function () {
     let totalPrice = 0;
 
     for (const item of this.items) {
-        if (item.productId?.price !== undefined) {
-            totalPrice += item.quantity * (item.productId?.price || item.Price || 1);
+        try {
+            // Ensure that the product information is available before calculating the price
+            const product = await Product.findById(item.productId);
 
-        } else {
-            console.error('Product or product price not available:', item);
+            if (!product) {
+                console.error('Product not found for item:', item);
+                continue; // Skip to the next item
+            }
+
+            // Use discount amount if available, otherwise use product price
+            const productPrice = item.discountAmount || product.discountAmount || product.price;
+            totalPrice += item.quantity * productPrice;
+
+        } catch (error) {
+            console.error('Error fetching product information:', error);
+            continue; // Skip to the next item
         }
     }
 
@@ -62,38 +73,37 @@ cartSchema.methods.calculateTAX = async function () {
     return this.TAX;
 };
 
-
 cartSchema.statics.updateQuantity = async function (itemId, newQuantity) {
     try {
-      const Cart = mongoose.model("Cart");
-  
-      if (!mongoose.Types.ObjectId.isValid(itemId)) {
-        throw new Error('Invalid ObjectId for itemId');
-      }
-  
-      const cartItem = await Cart.findOne({ "items._id": itemId });
+        const Cart = mongoose.model("Cart");
 
-      if (!cartItem) {
-        throw new Error('Cart item not found');
-      }
-  
-      // Find the index of the item in the items array
-      const itemIndex = cartItem.items.findIndex(item => item._id.toString() === itemId);
-  
-      if (itemIndex === -1) {
-        throw new Error('Cart item not found');
-      }
-  
-      // Update the quantity
-      cartItem.items[itemIndex].quantity = newQuantity;
-  
-      // Save the updated cart item
-      const updatedCartItem = await cartItem.save();
-      return updatedCartItem;
+        if (!mongoose.Types.ObjectId.isValid(itemId)) {
+            throw new Error('Invalid ObjectId for itemId');
+        }
+
+        const cartItem = await Cart.findOne({ "items._id": itemId });
+
+        if (!cartItem) {
+            throw new Error('Cart item not found');
+        }
+
+        // Find the index of the item in the items array
+        const itemIndex = cartItem.items.findIndex(item => item._id.toString() === itemId);
+
+        if (itemIndex === -1) {
+            throw new Error('Cart item not found');
+        }
+
+        // Update the quantity
+        cartItem.items[itemIndex].quantity = newQuantity;
+
+        // Save the updated cart item
+        const updatedCartItem = await cartItem.save();
+        return updatedCartItem;
     } catch (error) {
-      throw error;
+        throw error;
     }
-  };
-  
+};
+
 const Cart = mongoose.model("Cart", cartSchema);
 module.exports = Cart;

@@ -78,11 +78,10 @@ const userController = {
   },
 
 
-  // tologin: (req, res) => {
-  //   res.render("./user/userlogin");
-  // },
+ 
   logout: (req, res) => {
-    res.render('./user/userlogin')
+    req.session.destroy();
+    res.redirect('/');
   },
 
   showLandpage: async (req, res) => {
@@ -171,126 +170,117 @@ const userController = {
 
   signupp: async (req, res) => {
     try {
-      const brands = await Brands.find({});
-      const categories = await Category.find({});
-      const product = await productmodel.find({})
-      const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false })
-      const { username, email, password, confirmPassword } = req.body;
-      // req.session.email = Users.email;
-      const user = await Users.findOne({ email: email });
-
-      // Check if the email already exists
-      const existingUser = await Users.findOne({ email: email });
-      if (existingUser) {
-        return res.render('./user/signup', { error: "User already exists. Please log in." });
-      }
-      req.session.signupdetails = { username, email, password }
-
-      hashedPassword = await bcrypt.hash(password, 10);
-
-      // Send OTP
-      const createdOTP = await sendOTP(email);
-      console.log(createdOTP, 'otp created');
-      req.session.email = email;
-      req.session.user = user;
-      console.log(user, 'user2');
-      // Redirect to the OTP page
-      res.render('./user/otpPage', { email });
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).send('Internal Server Error');
-    }
-  },
-  validateOtp: async (req, res) => {
-    try {
-        // Retrieve necessary data for rendering the page
         const brands = await Brands.find({});
         const categories = await Category.find({});
-        const product = await productmodel.find({});
-        const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false });
+        const product = await productmodel.find({})
+        const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false })
+        const { username, email, password, confirmPassword } = req.body;
+        const referralId = req.query.referralId; // Extract referral ID from query parameters
 
-        console.log('verifying otp..');
-        const { otp1, otp2, otp3, otp4 } = req.body;
-        const enteredOtp = otp1 + otp2 + otp3 + otp4;
-        const { username, email, password } = req.session.signupdetails;
-
-        // Find the OTP record in the database
-        const createdOTPrecord = await Otp.findOne({ email, otp: enteredOtp });
-        if (!createdOTPrecord) {
-            console.log('Invalid OTP Rendering user/Otp...')
-            return res.render('./user/otpPage', { error: 'Invalid OTP' });
+        // Check if the email already exists
+        const existingUser = await Users.findOne({ email: email });
+        if (existingUser) {
+            return res.render('./user/signup', { error: "User already exists. Please log in." });
         }
+        req.session.signupdetails = { username, email, password }
 
-        // Generate referral ID
-        const referralId = userController.generateRefferalId();
-        console.log(referralId, 'iiiiiiiiii');
-
-        // Check if referral ID exists in the session
-        if (req.session.referralId) {
-        
-            const referalData = await ReferalData.findOne();
-            console.log(referalData, 'reffffffffff');
-            if (referalData && referalData.Status === true) {
-                const BonusPrice = referalData.BonusPrice;
-                console.log(BonusPrice, 'bonusss');
-
-                // Increment user's wallet with referral bonus
-                const updatedReferringUser = await Users.findOneAndUpdate(
-                    { referralId: req.session.referralId, wallet: { $exists: true } }, // Check if wallet field exists
-                    {
-                        $inc: { 'wallet.amount': BonusPrice + 100 }, // Increment by 100 additionally
-                        $push: {
-                            'wallet.transactions': {
-                                transactionType: 'credit',
-                                amount: BonusPrice + 100, // Increment by 100 additionally
-                                date: new Date(),
-                                from: 'Referral bonus',
-                            },
-                        },
-                    },
-                    { new: true }
-                );
-
-                console.log('Referral bonus added to referring user:', updatedReferringUser);
-            }
-        }
-
-        // Create user with referral ID
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await Users.create({
-            username: username,
-            email: email,
-            password: hashedPassword,
-            referralId: referralId, // Assign generated referral ID
-        });
-
-        // Increment the new user's wallet with 100 units
-        const updatedNewUser = await Users.findOneAndUpdate(
-            { _id: newUser._id },
-            {
-                $inc: { 'wallet.amount': 100 },
-                $push: {
-                    'wallet.transactions': {
-                        transactionType: 'credit',
-                        amount: 100,
-                        date: new Date(),
-                        from: 'Sign-up bonus',
-                    },
-                },
-            },
-            { new: true }
-        );
-
-       // console.log('New user saved:', updatedNewUser);
-
-        // Redirect user to home page after successful signup
-        req.session.user = newUser.username;
-        res.redirect('/home');
+        hashedPassword = await bcrypt.hash(password, 10);
+        const createdOTP = await sendOTP(email);
+        console.log(createdOTP, 'otp created');
+        req.session.email = email;
+        req.session.user = user;
+      
+        // Redirect to the OTP page
+        res.render('./user/otpPage', { email });
     } catch (error) {
-        console.error('Error in OTP verification:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
     }
 },
+
+validateOtp: async (req, res) => {
+  try {
+      // Retrieve necessary data for rendering the page
+      const brands = await Brands.find({});
+      const categories = await Category.find({});
+      const product = await productmodel.find({});
+      const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false });
+
+      console.log('verifying otp..');
+      const { otp1, otp2, otp3, otp4 } = req.body;
+      const enteredOtp = otp1 + otp2 + otp3 + otp4;
+      const { username, email, password } = req.session.signupdetails;
+
+      const createdOTPrecord = await Otp.findOne({ email, otp: enteredOtp });
+      if (!createdOTPrecord) {
+          console.log('Invalid OTP Rendering user/Otp...')
+          return res.render('./user/otpPage', { error: 'Invalid OTP' });
+      }
+
+      const referralId = userController.generateRefferalId();
+      console.log(referralId, 'iiiiiiiiii');
+
+      // Check if referral ID exists in the session
+      if (req.session.referralId) {
+          // Assuming bonusAmount is the bonus given to the referring user
+          const bonusAmount = 50; // Example bonus amount
+          // Increment referring user's wallet with referral bonus
+          const referringUser = await Users.findOneAndUpdate(
+              { referralId: req.session.referralId },
+              {
+                  $inc: { 'wallet.balance': bonusAmount },
+                  $push: {
+                      'wallet.transactions': {
+                          transactionType: 'credit',
+                          amount: bonusAmount,
+                          date: new Date(),
+                          from: 'Referral bonus',
+                      },
+                  },
+              },
+              { new: true }
+          );
+          console.log('Referral bonus added to referring user:', referringUser);
+      }
+
+      // Create user with referral ID
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await Users.create({
+          username: username,
+          email: email,
+          password: hashedPassword,
+          referralId: referralId, // Assign generated referral ID
+      });
+
+      // Increment the new user's wallet with 100 units
+      const signupBonusAmount = 100; // Example signup bonus amount
+      const updatedNewUser = await Users.findOneAndUpdate(
+          { _id: newUser._id },
+          {
+              $inc: { 'wallet.balance': signupBonusAmount },
+              $push: {
+                  'wallet.transactions': {
+                      transactionType: 'credit',
+                      amount: signupBonusAmount,
+                      date: new Date(),
+                      from: 'Sign-up bonus',
+                  },
+              },
+          },
+          { new: true }
+      );
+
+      console.log('New user saved:', updatedNewUser);
+
+      // Redirect user to home page after successful signup
+      req.session.user = newUser.username;
+      res.redirect('/home');
+  } catch (error) {
+      console.error('Error in OTP verification:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
 
   getresentOtp: async (req, res) => {
     try {

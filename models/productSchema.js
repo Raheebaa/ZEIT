@@ -52,7 +52,8 @@ const productSchema = new mongoose.Schema({
       },
       message: 'Discount amount must be a positive number and less than or equal to the price.'
     }
-  }
+  },
+
 });
 
 const Product = mongoose.model('Product', productSchema);

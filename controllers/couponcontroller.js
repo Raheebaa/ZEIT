@@ -5,6 +5,7 @@ const fs = require('fs');
 const Users = require("../models/usermodel")
 const coupon = require('../models/coupen')
 const Cart = require('../models/cartModel');
+const order= require('../models/orderModel')
 const { log } = require('console');
 
 
@@ -289,10 +290,8 @@ module.exports = {
                 return res.status(400).json({ success: false, message: 'Coupon is expired or not yet valid.' });
             }
             
-            // Assuming TotalAmount is a property of each cart object in the carts array
             const cartTotal = carts.reduce((total, cart) => total + cart.TotalAmount, 0);
-            console.log(cartTotal, 'tot');
-            
+        
             const discountAmount = coupons.DiscountAmount || 0;
             const updatedTotalAmount = cartTotal - discountAmount;
             
@@ -304,12 +303,14 @@ module.exports = {
                 message: 'Coupon applied successfully.',
                 discountAmount: discountAmount,
                 updatedTotalAmount: updatedTotalAmount
+                    
             });
         } catch (error) {
             console.error('Error applying coupon:', error);
             return res.status(500).json({ success: false, message: 'Internal server error.' });
         }
     },
+    
     
     
 }

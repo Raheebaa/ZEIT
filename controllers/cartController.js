@@ -44,8 +44,31 @@ module.exports = {
             res.status(500).json({ error: 'Internal server error', details: err.message });
         }
     },
-
-
+    makePurchase: async (req, res) => {
+        try {
+            const email = req.session.email;
+            const user = await Users.findOne({ email: email });
+            const userId = user._id;
+            const userCart = await Cart.findOne({ userId });
+    
+            if (!userCart) {
+                return res.status(404).json({ success: false, message: "Cart not found" });
+            }
+    
+            const totalPriceWithTax = await userCart.calculateTotalPrice();
+    
+            // Update the cart with the calculated total price with tax
+            userCart.TotalAmount = totalPriceWithTax;
+        console.log(userCart.TotalAmount);
+            // Save the updated cart
+            await userCart.save();
+            return res.status(200).json({ success: true, message: "Cart updated successfully" });
+        } catch (error) {
+            console.error("Error in makePurchase:", error);
+            return res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    },
+    
     addToCart: async (req, res) => {
         try {
             const email = req.session.email;
@@ -79,7 +102,7 @@ module.exports = {
                     existingItem.quantity = newQuantity; // Update the quantity
                 } else {
                     // Populate the productId field to retrieve product details including discountAmount
-                    const product = await productUpload.findById(productId); // Remove .populate('productId')
+                    const product = await Product.findById(productId); // Change productUpload to Product
                     const Price = product ? product.price : 0;
                     const discountAmount = product ? product.discountAmount : 0;
                     userCart.items.push({ productId, quantity: quantity, Price: Price, discountAmount: discountAmount });
@@ -102,8 +125,6 @@ module.exports = {
             res.status(500).json({ error: 'Internal server error' });
         }
     },
-    
-    
     
     removeCart: async (req, res) => {
         try {
@@ -178,8 +199,6 @@ module.exports = {
                     message: 'Stock limit reached. Cannot update cart quantity.',
                 });
             }
-    
-            // For other errors, return a generic message
             return res.status(500).json({
                 success: false,
                 message: 'Internal server error. Failed to update cart quantity.',

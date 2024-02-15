@@ -20,7 +20,6 @@ const OrdersSchema = new Schema({
   },
   paymentMethod:{type : String},
   paymentStatus:{type : String},
-  CoupenID: { type: Schema.Types.ObjectId },
   TotalAmount: { type: Number },
   OrderDate: { type: Date },
   PaymentId: { type: Number },
