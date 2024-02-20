@@ -102,7 +102,8 @@ module.exports = {
                     existingItem.quantity = newQuantity; // Update the quantity
                 } else {
                     // Populate the productId field to retrieve product details including discountAmount
-                    const product = await Product.findById(productId); // Change productUpload to Product
+                    const product = await productUpload.findById(productId); // Change productUpload to product
+
                     const Price = product ? product.price : 0;
                     const discountAmount = product ? product.discountAmount : 0;
                     userCart.items.push({ productId, quantity: quantity, Price: Price, discountAmount: discountAmount });

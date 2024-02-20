@@ -42,7 +42,7 @@
                       0; %>
                       <% if (offerPercentage> 0) { %>
                         <!-- Calculate the discounted price -->
-                        <% const discountedPrice=products.price - (products.price * offerPercentage) / 100; %>
+                        <% const discountedPrice= (products.price * offerPercentage) / 100; %>
 
                           <!-- Display the discounted price in bold -->
                           <span class="discounted-price" style="font-weight: bold;">₹<%= discountedPrice.toFixed(2) %>
@@ -284,9 +284,7 @@
       }
     </script>
     <script>
-      // ... (your existing script for quantity update and other functionality) ...
-
-      // Calculate the discount amount based on the offer percentage
+    
       function calculateDiscountAmount(actualPrice, discountPercentage) {
         const discountAmount = (actualPrice * discountPercentage) / 100;
         return discountAmount.toFixed(2); // Adjust decimal places as needed

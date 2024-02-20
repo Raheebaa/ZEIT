@@ -21,6 +21,7 @@ const OrdersSchema = new Schema({
   paymentMethod:{type : String},
   paymentStatus:{type : String},
   TotalAmount: { type: Number },
+  UpdatedAmount: { type: Number },
   OrderDate: { type: Date },
   PaymentId: { type: Number },
 });

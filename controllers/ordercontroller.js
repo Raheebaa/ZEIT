@@ -81,7 +81,7 @@ module.exports = {
         req.session.user = userData;
 
         const userId = userData._id;
-        console.log(userId, 'USERID');
+       
         const Cart = await cart.findOne({ userId: userId });
 
         if (!Cart || !Cart.TotalAmount) {
@@ -102,126 +102,132 @@ module.exports = {
 
         // Check if there is an updatedTotalAmount sent from the frontend
         const updatedTotalAmount = parseFloat(req.body.updatedTotalAmount);
+        console.log(updatedTotalAmount,'uptot');
         if (!isNaN(updatedTotalAmount) && updatedTotalAmount > 0) {
-            TotalPrice = updatedTotalAmount;
+            TotalPrice = updatedTotalAmount; // Use the updated total amount
         }
+
         let walletBalance = userWallet ? userWallet.balance : 0;
-      // Check if the selected payment method is "wallet"
-      if (paymentMethod === "wallet") {
-        if (TotalPrice > walletBalance) {
-          return res.status(400).json({
-            success: false,
-            message: "Insufficient wallet balance for this order",
-          });
-        }
-        // Deduct the order amount from the wallet balance
-        walletBalance -= TotalPrice;
-      }
-      // Save the updated user data
-      if (userWallet) {
-        userWallet.balance = walletBalance;
-        await userWallet.save();
-
-        // Add a transaction to represent the debit
+        // Check if the selected payment method is "wallet"
         if (paymentMethod === "wallet") {
-
-          userWallet.transactions.push({
-            transactionType: 'debit',
-            amount: TotalPrice,
-            date: new Date(),
-            from: 'order payment',
-          });
-          await userWallet.save();
+            if (TotalPrice > walletBalance) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient wallet balance for this order",
+                });
+            }
+            // Deduct the order amount from the wallet balance
+            walletBalance -= TotalPrice;
         }
-      }
+        // Save the updated user data
+        if (userWallet) {
+            userWallet.balance = walletBalance;
+            await userWallet.save();
 
-      const selectedAddress = userData.Address.find(
-        (address) => address._id == selectedAddressId
-      );
+            // Add a transaction to represent the debit
+            if (paymentMethod === "wallet") {
 
-      if (!selectedAddress) {
-        return res.status(400).json({
-          success: false,
-          message: "Selected address not found",
-        });
-      }
-      const cartDetails = await cart.findOne({ userId: userId });
-      const newOrder = new order({
-        Status: "Pending",
-        paymentStatus: paymentMethod === "online" || paymentMethod === "wallet" ? "paid" : "pending",
-        Items: cartDetails.items,
-        UserID: userId,
-        paymentMethod: paymentMethod,
-        Address: {
-          name: selectedAddress.name,
-          addressLine: selectedAddress.addressLine,
-          city: selectedAddress.city,
-          pincode: selectedAddress.pinCode,
-          state: selectedAddress.state,
-          mobileNumber: selectedAddress.MobileNumber,
-        },
-        TotalAmount: cartDetails.TotalAmount,
-        OrderDate: new Date(),
-      });
-
-      savedOrder = await newOrder.save();
-
-      if (savedOrder) {
-        await cart.findOneAndDelete({ userId: userId });
-
-        for (const item of savedOrder.Items) {
-          const productId = item.productId;
-          const purchasedQuantity = item.quantity;
-
-          await updateProductStock(productId, purchasedQuantity, cartDetails);
+                userWallet.transactions.push({
+                    transactionType: 'debit',
+                    amount: TotalPrice,
+                    date: new Date(),
+                    from: 'order payment',
+                });
+                await userWallet.save();
+            }
         }
-      }
-      if (paymentMethod === "online") {
-        const razorpayInstance = new razorpay({
-          key_id: 'rzp_test_9oVCk3W2kwsPv6',
-          key_secret: 'bmanhgrzIh1odJegp9XKz3Mw',
-        });
 
-        const orderOptions = {
-          amount: TotalPrice * 100, // Amount in paisa
-          currency: "INR",
-          receipt: savedOrder._id.toString(),
-        };
+        const selectedAddress = userData.Address.find(
+            (address) => address._id == selectedAddressId
+        );
 
-        try {
-          const razorpayOrder = await razorpayInstance.orders.create(orderOptions);
-          console.log(razorpayOrder, 'razorpayorderrr');
-          res.json({
-            success: true,
-            online: true,
-            razorpayOrder,
-            savedOrder,
-          });
-
-        } catch (razorpayError) {
-          console.error('Razorpay order creation failed:', razorpayError);
-          return res.status(500).json({
-            success: false,
-            message: 'Error creating Razorpay order',
-            razorpayError,
-          });
+        if (!selectedAddress) {
+            return res.status(400).json({
+                success: false,
+                message: "Selected address not found",
+            });
         }
-      } else {
 
-        res.json({
-          success: true,
-          message: "Order placed successfully",
-          walletBalance: userWallet.balance,
+        const cartDetails = await cart.findOne({ userId: userId });
+
+        const newOrder = new order({
+            Status: "Pending",
+            paymentStatus: paymentMethod === "online" || paymentMethod === "wallet" ? "paid" : "pending",
+            Items: cartDetails.items,
+            UserID: userId,
+            paymentMethod: paymentMethod,
+            Address: {
+                name: selectedAddress.name,
+                addressLine: selectedAddress.addressLine,
+                city: selectedAddress.city,
+                pincode: selectedAddress.pinCode,
+                state: selectedAddress.state,
+                mobileNumber: selectedAddress.MobileNumber,
+            },
+            TotalAmount: TotalPrice, 
+            UpdatedAmount: isNaN(updatedTotalAmount) ? null : updatedTotalAmount, // Set UpdatedAmount to null if not a valid number
+            OrderDate: new Date(),
         });
-      }
+
+        savedOrder = await newOrder.save();
+
+        if (savedOrder) {
+            await cart.findOneAndDelete({ userId: userId });
+
+            for (const item of savedOrder.Items) {
+                const productId = item.productId;
+                const purchasedQuantity = item.quantity;
+
+                await updateProductStock(productId, purchasedQuantity, cartDetails);
+            }
+        }
+        if (paymentMethod === "online") {
+            const razorpayInstance = new razorpay({
+                key_id: 'rzp_test_9oVCk3W2kwsPv6',
+                key_secret: 'bmanhgrzIh1odJegp9XKz3Mw',
+            });
+
+            const orderOptions = {
+                amount: TotalPrice * 100, // Amount in paisa
+                currency: "INR",
+                receipt: savedOrder._id.toString(),
+            };
+
+            try {
+                const razorpayOrder = await razorpayInstance.orders.create(orderOptions);
+                console.log(razorpayOrder, 'razorpayorderrr');
+                res.json({
+                    success: true,
+                    online: true,
+                    razorpayOrder,
+                    savedOrder,
+                });
+
+            } catch (razorpayError) {
+                console.error('Razorpay order creation failed:', razorpayError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error creating Razorpay order',
+                    razorpayError,
+                });
+            }
+        } else {
+            res.json({
+                success: true,
+                message: "Order placed successfully",
+                walletBalance: userWallet.balance,
+            });
+        }
     } catch (error) {
-      console.error("Error placing the order:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Internal server error",
-      });
+        console.error("Error placing the order:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
-  },
+},
+
+  
   success: async (req, res) => {
     const userData = await Users.findOne({ email: req.session.email });
     req.session.user = userData;

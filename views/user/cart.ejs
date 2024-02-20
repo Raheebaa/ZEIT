@@ -20,14 +20,9 @@
 <body>
   <%- include('navbar') -%>
     <%- include('header') -%>
-
-
       <section class="bg-white">
-
         <div class="container-fluid p-5">
           <div class="row">
-            <!-- cart -->
-
             <div class="col-lg-9">
               <div class="card border rounded shadow">
                 <div class="m-4 rounded shadow-5">
@@ -224,34 +219,34 @@
 }
 </script>
       <script>
-
         function addToCart(itemId) {
-          fetch('/user/addToCart', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              itemId: itemId,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.success) {
-                // Update the UI dynamically
-                updateCartUI();
-                swal("Success!", "Item added to cart..............", "success");
-              } else {
-                console.error('Error adding product to the cart:', data.message);
-                swal("Error!", "Failed to add item to cart..............", "error");
-              }
-            })
-            .catch((error) => {
-              console.error('Error adding product to the cart:', error);
-              swal("Error!", "Failed to add item to cart..............", "error");
-            });
+    fetch('/user/addToCart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            itemId: itemId,
+        }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            // Update the UI dynamically
+            updateCartUI();
+            // Fetch the updated cart information from the server
+            updateTotalDetails();
+            swal("Success!", "Item added to cart..............", "success");
+        } else {
+            console.error('Error adding product to the cart:', data.message);
+            swal("Error!", "Failed to add item to cart..............", "error");
         }
-
+    })
+    .catch((error) => {
+        console.error('Error adding product to the cart:', error);
+        swal("Error!", "Failed to add item to cart..............", "error");
+    });
+}
 
         function removeFromCart(productId, cartId, productName) {
           fetch(`/removeFromCart/${productId}`, {
@@ -293,59 +288,58 @@
         var updateInProgress = false; // Variable to track whether an update is in progress
 
         function updateCartQuantity(itemId, change) {
-          var quantityInput = document.getElementById('cartQuantity' + itemId);
-          if (quantityInput && !updateInProgress) {
-            updateInProgress = true;
+    var quantityInput = document.getElementById('cartQuantity' + itemId);
+    if (quantityInput && !updateInProgress) {
+        updateInProgress = true;
 
-            var newQuantity = parseInt(quantityInput.value) + change;
-            var maxStock = parseInt(quantityInput.getAttribute('max')) || Infinity;
+        var newQuantity = parseInt(quantityInput.value) + change;
+        var maxStock = parseInt(quantityInput.getAttribute('max')) || Infinity;
 
-            if (newQuantity < 1 || newQuantity > maxStock) {
+        if (newQuantity < 1 || newQuantity > maxStock) {
+            swal("Error!", "stock is reached cannot increment", "error");
+            updateInProgress = false;
+            return;
+        }
 
-              swal("Error!", "stock is reached cannot increment", "error");
-              updateInProgress = false;
-              return;
-            }
+        quantityInput.value = newQuantity;
 
-            quantityInput.value = newQuantity;
-
-            // Update the quantity in the backend (send a request to your server)
-            fetch('/updateCartQuantity', {
-              method: 'POST',
-              headers: {
+        // Update the quantity in the backend (send a request to your server)
+        fetch('/updateCartQuantity', {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
+            },
+            body: JSON.stringify({
                 itemId: itemId,
                 newQuantity: newQuantity,
-              }),
-            })
-              .then(async (response) => {
-                if (!response.ok) {
-                  const data = await response.json();
-                  // Display error message only if it's not due to stock limit and the change is not zero
-                  if (!data.stockLimitReached && change !== 0) {
+            }),
+        })
+        .then(async (response) => {
+            if (!response.ok) {
+                const data = await response.json();
+                // Display error message only if it's not due to stock limit and the change is not zero
+                if (!data.stockLimitReached && change !== 0) {
                     swal("Error!", data.message || "Failed to update cart quantity.", "error");
-                  }
-                  throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                return response.json();
-              })
-              .then((data) => {
-                if (data.success) {
-                  updateTotalDetails();
-                }
-              })
-              .catch((error) => {
-                console.error('Error updating cart quantity:', error);
-              })
-              .finally(() => {
-                setTimeout(() => {
-                  updateInProgress = false;
-                }, 100);
-              });
-          }
-        }
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.success) {
+                updateTotalDetails();
+            }
+        })
+        .catch((error) => {
+            console.error('Error updating cart quantity:', error);
+        })
+        .finally(() => {
+            setTimeout(() => {
+                updateInProgress = false;
+            }, 100);
+        });
+    }
+}
         function updateTotalDetails() {
           // Fetch and update values
           var updateInProgress = false;

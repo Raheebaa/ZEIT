@@ -373,6 +373,7 @@
               body: JSON.stringify({
                 selectedAddress: selectedAddressValue,
                 selectedPaymentMethod: selectedPaymentMethod,
+                updatedTotalAmount: parseFloat(document.getElementById('updatedTotalAmount').innerText), // Send the updated total amount
               }),
             });
 
