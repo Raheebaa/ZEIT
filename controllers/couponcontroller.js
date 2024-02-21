@@ -122,128 +122,27 @@ module.exports = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    useCoupon: async (req, res) => {
-        try {
-            // console.log("coupon added"); 
-
-
-            console.log(req.session, "consoleing the session from the use coupons")
-            const { couponCode } = req.body;
-            console.log(couponCode);
-            const userData = await Users.findOne({ email: req.session.email })
-
-            const cartData = await Cart.findOne({ userId: userData._id })
-            const purchaseAmount = req.session.totalPrice
-            const coupons = await coupon.findOne({ Coupon_code: couponCode });
-
-            if (!coupons) {
-                return res.json({ success: false, message: 'Coupon not found' });
-            }
-
-            if (!coupons.IsActive) {
-                return res.json({ success: false, message: "Coupon is not active" });
-
-            }
-
-            const isCouponUsed = userData.usedCoupons.some(usedCoupon => usedCoupon.couponCode === couponCode);
-            console.log(isCouponUsed);
-            if (isCouponUsed) {
-
-                console.log('going to if condition of is coupon used')
-                return res.json({ success: false, message: 'Coupon already used' });
-            }
-
-            if (purchaseAmount < coupons.Min_amount) {
-                console.log('going to if case of purchase is lesser than the coupon min amount')
-                return res.json({ success: false, message: 'Purchase amount does not meet the minimum requirement for the coupon' });
-            }
-            console.log("--------", purchaseAmount, coupons.Min_amount);
-            if (purchaseAmount < coupons.DiscountAmount) {
-
-
-                return res.json({ success: false, message: 'Purchase Amount must Greater Than Discount amount' });
-            }
-
-            const currentDate = new Date();
-            const endDate = new Date(coupons.Expirey_date);
-            if (currentDate > endDate) {
-                console.log('going to if condition of coupon expired')
-                return res.json({ success: false, message: 'Coupon has expired' });
-            }
-            console.log(currentDate, endDate, "current date and end date");
-
-            const discountedAmount = Math.min(purchaseAmount, coupons.DiscountAmount);
-            const totalAfterDiscount = Math.floor(purchaseAmount - discountedAmount);
-            req.session.TotalPrice = totalAfterDiscount
-
-            cartData.coupon = discountedAmount;
-
-            await cartData.save();
-
-            console.log(totalAfterDiscount, "***********", "totall after the discount");
-            userData.usedCoupons.push({
-                Coupon_code: couponCode,
-                discountedAmount: discountedAmount,
-                usedDate: new Date(),
-            });
-            await userData.save();
-            console.log(userData, "//////////////////////////////////////////////////////");
-
-
-
-            // const updateOrder = await order.findOne({})
-
-
-            console.log(discountedAmount, totalAfterDiscount, "conseled data xomng")
-
-            return res.json({
-                success: true,
-                message: 'Coupon applied successfully',
-                coupon: discountedAmount,
-                discountedAmount: discountedAmount,
-                TotalPrice: totalAfterDiscount,
-                coupon: discountedAmount
-            });
-        } catch (error) {
-            console.error(error, "error happpened in coupon management")
-        }
-    },
-
+   
     cancelcoupon: async (req, res) => {
         try {
-
-            console.log("function for cancel coupon started working")
             const userData = await Users.findOne({ email: req.session.email });
             const cartData = await Cart.findOne({ userId: userData._id });
-            const purchaseAmount = req.session.totalPrice
-
-
-            console.log(userData, "data of user from cancel coupon")
-            // Check if there's a coupon applied
+            const purchaseAmount = req.session.totalPrice;
+    
             if (!cartData.coupon || cartData.coupon === 0) {
-
-                console.log("no coupon found")
                 return res.json({ success: false, message: 'No coupon applied to cancel.' });
-
             }
-
-            console.log(cartData, "before saving to 0 for canceling the coupon")
-
-            cartData.coupon = 0;
+    
+            cartData.coupon = null; // Corrected typo here
             await cartData.save();
-
-            console.log(cartData, "after changing to 0 for canlling the coupon")
-
-            // Remove the used coupon from the user's data
-            const { couponCode } = req.body;
+    
             userData.usedCoupons = userData.usedCoupons.filter(usedCoupon => usedCoupon.couponCode !== couponCode);
             await userData.save();
-
-
-
-
+    
             return res.json({
-                success: true, message: 'Coupon canceled successfully.', coupon: 0,
+                success: true,
+                message: 'Coupon canceled successfully.',
+                coupon: null, // Changed to null to remove the coupon
                 TotalPrice: purchaseAmount,
                 coupon: 0
             });
@@ -273,44 +172,49 @@ module.exports = {
             const user = await Users.findOne({ email: email });
             const couponCode = req.body.couponCode;
             const carts = await Cart.find({});
-            
+    
             if (!carts || carts.length === 0) {
-                console.log('Cart not found.');
                 return res.status(400).json({ success: false, message: 'Cart not found.' });
             }
-            
+    
             const coupons = await coupon.findOne({ Coupon_code: couponCode, IsActive: true });
-            
+    
             if (!coupons) {
                 return res.status(400).json({ success: false, message: 'Invalid coupon code or coupon is not active.' });
             }
-            
+    
             const currentDate = new Date();
-            if (currentDate < coupon.Start_date || currentDate > coupon.Expirey_date) {
+            if (currentDate < coupons.Start_date || currentDate > coupons.Expirey_date) {
                 return res.status(400).json({ success: false, message: 'Coupon is expired or not yet valid.' });
             }
-            
-            const cartTotal = carts.reduce((total, cart) => total + cart.TotalAmount, 0);
-        
+    
+            // Check if the user has already used this coupon
+            if (user.usedCoupons.some(usedCoupon => usedCoupon.couponCode === couponCode)) {
+                return res.status(400).json({ success: false, message: 'You have already used this coupon.' });
+            }
+    
+            // Add the coupon to the user's used coupons list
+            user.usedCoupons.push({ couponCode });
+            await user.save();
+    
+            const cartTotal = carts.reduce((total, cart) => cart.TotalAmount, 0);
+    
             const discountAmount = coupons.DiscountAmount || 0;
             const updatedTotalAmount = cartTotal - discountAmount;
-            
+    
             console.log('Coupon applied successfully:', couponCode);
-            
-            // Return discount amount and updated total amount in the response
+    
             res.status(200).json({
                 success: true,
                 message: 'Coupon applied successfully.',
                 discountAmount: discountAmount,
                 updatedTotalAmount: updatedTotalAmount
-                    
             });
         } catch (error) {
             console.error('Error applying coupon:', error);
-            return res.status(500).json({ success: false, message: 'Internal server error.' });
+            res.status(500).json({ success: false, message: 'Internal server error.' });
         }
     },
-    
-    
+       
     
 }
