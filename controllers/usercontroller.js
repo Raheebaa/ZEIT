@@ -174,7 +174,8 @@ const userController = {
         const categories = await Category.find({});
         const product = await productmodel.find({})
         const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false })
-        const { username, email, password, confirmPassword } = req.body;
+        const { username, email, password } = req.body;
+        console.log(req.body,'signupp');
         const referralId = req.query.referralId; // Extract referral ID from query parameters
 
         // Check if the email already exists
@@ -183,7 +184,7 @@ const userController = {
             return res.render('./user/signup', { error: "User already exists. Please log in." });
         }
         req.session.signupdetails = { username, email, password }
-
+console.log(req.session.signupdetails,'dettt');
         hashedPassword = await bcrypt.hash(password, 10);
         const createdOTP = await sendOTP(email);
         console.log(createdOTP, 'otp created');
@@ -217,31 +218,31 @@ validateOtp: async (req, res) => {
           return res.render('./user/otpPage', { error: 'Invalid OTP' });
       }
 
-      const referralId = userController.generateRefferalId();
-      console.log(referralId, 'iiiiiiiiii');
+      // const referralId = userController.generateRefferalId();
+      // console.log(referralId, 'iiiiiiiiii');
 
       // Check if referral ID exists in the session
-      if (req.session.referralId) {
-          // Assuming bonusAmount is the bonus given to the referring user
-          const bonusAmount = 50; // Example bonus amount
-          // Increment referring user's wallet with referral bonus
-          const referringUser = await Users.findOneAndUpdate(
-              { referralId: req.session.referralId },
-              {
-                  $inc: { 'wallet.balance': bonusAmount },
-                  $push: {
-                      'wallet.transactions': {
-                          transactionType: 'credit',
-                          amount: bonusAmount,
-                          date: new Date(),
-                          from: 'Referral bonus',
-                      },
-                  },
-              },
-              { new: true }
-          );
-          console.log('Referral bonus added to referring user:', referringUser);
-      }
+      // if (req.session.referralId) {
+      //     // Assuming bonusAmount is the bonus given to the referring user
+      //     const bonusAmount = 50; // Example bonus amount
+      //     // Increment referring user's wallet with referral bonus
+      //     const referringUser = await Users.findOneAndUpdate(
+      //         { referralId: req.session.referralId },
+      //         {
+      //             $inc: { 'wallet.balance': bonusAmount },
+      //             $push: {
+      //                 'wallet.transactions': {
+      //                     transactionType: 'credit',
+      //                     amount: bonusAmount,
+      //                     date: new Date(),
+      //                     from: 'Referral bonus',
+      //                 },
+      //             },
+      //         },
+      //         { new: true }
+      //     );
+      //     console.log('Referral bonus added to referring user:', referringUser);
+      // }
 
       // Create user with referral ID
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -249,28 +250,28 @@ validateOtp: async (req, res) => {
           username: username,
           email: email,
           password: hashedPassword,
-          referralId: referralId, // Assign generated referral ID
+          // referralId: referralId, Assign generated referral ID
       });
 
       // Increment the new user's wallet with 100 units
-      const signupBonusAmount = 100; // Example signup bonus amount
-      const updatedNewUser = await Users.findOneAndUpdate(
-          { _id: newUser._id },
-          {
-              $inc: { 'wallet.balance': signupBonusAmount },
-              $push: {
-                  'wallet.transactions': {
-                      transactionType: 'credit',
-                      amount: signupBonusAmount,
-                      date: new Date(),
-                      from: 'Sign-up bonus',
-                  },
-              },
-          },
-          { new: true }
-      );
+      // const signupBonusAmount = 100; // Example signup bonus amount
+      // const updatedNewUser = await Users.findOneAndUpdate(
+      //     { _id: newUser._id },
+      //     {
+      //         $inc: { 'wallet.balance': signupBonusAmount },
+      //         $push: {
+      //             'wallet.transactions': {
+      //                 transactionType: 'credit',
+      //                 amount: signupBonusAmount,
+      //                 date: new Date(),
+      //                 from: 'Sign-up bonus',
+      //             },
+      //         },
+      //     },
+      //     { new: true }
+      // );
 
-      console.log('New user saved:', updatedNewUser);
+      // console.log('New user saved:', updatedNewUser);
 
       // Redirect user to home page after successful signup
       req.session.user = newUser.username;

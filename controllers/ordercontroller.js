@@ -92,6 +92,11 @@ module.exports = {
         }
 
         const userWallet = await walletmodel.findOne({ userId: userId });
+        let walletBalance = 0;
+
+        if (userWallet) {
+            walletBalance = userWallet.balance;
+        }
 
         let TotalPrice = Cart.TotalAmount; // Set TotalPrice to the default Cart total amount
 
@@ -102,12 +107,10 @@ module.exports = {
 
         // Check if there is an updatedTotalAmount sent from the frontend
         const updatedTotalAmount = parseFloat(req.body.updatedTotalAmount);
-        console.log(updatedTotalAmount,'uptot');
         if (!isNaN(updatedTotalAmount) && updatedTotalAmount > 0) {
             TotalPrice = updatedTotalAmount; // Use the updated total amount
         }
 
-        let walletBalance = userWallet ? userWallet.balance : 0;
         // Check if the selected payment method is "wallet"
         if (paymentMethod === "wallet") {
             if (TotalPrice > walletBalance) {
@@ -119,6 +122,7 @@ module.exports = {
             // Deduct the order amount from the wallet balance
             walletBalance -= TotalPrice;
         }
+
         // Save the updated user data
         if (userWallet) {
             userWallet.balance = walletBalance;
@@ -126,7 +130,6 @@ module.exports = {
 
             // Add a transaction to represent the debit
             if (paymentMethod === "wallet") {
-
                 userWallet.transactions.push({
                     transactionType: 'debit',
                     amount: TotalPrice,
@@ -195,7 +198,6 @@ module.exports = {
 
             try {
                 const razorpayOrder = await razorpayInstance.orders.create(orderOptions);
-                console.log(razorpayOrder, 'razorpayorderrr');
                 res.json({
                     success: true,
                     online: true,
@@ -215,7 +217,7 @@ module.exports = {
             res.json({
                 success: true,
                 message: "Order placed successfully",
-                walletBalance: userWallet.balance,
+                walletBalance: walletBalance,
             });
         }
     } catch (error) {
@@ -227,7 +229,6 @@ module.exports = {
     }
 },
 
-  
   success: async (req, res) => {
     const userData = await Users.findOne({ email: req.session.email });
     req.session.user = userData;

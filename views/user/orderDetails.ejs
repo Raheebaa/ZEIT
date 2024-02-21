@@ -227,88 +227,95 @@
                               <div class="col-md-2 mb-4">
 
                               </div>
-                              <% const taxRate=0.01; const itemPrice=x.productId?.price* x.quantity || 0; const
-                                tax=itemPrice * taxRate; const totalPrice=itemPrice + tax; %>
-                                <% if (x.productId && x.productId.ProductImage &&
-                                  Array.isArray(x.productId.ProductImage) && x.productId.ProductImage.length> 0) { %>
-                                  <img src="/upload/<%= x.productId.ProductImage[0] %>" class="border rounded me-3"
-                                    style="width: 120px; height: 120px;" />
-                                  <% } else { %>
-                                    <img src="#" class="border rounded me-3" style="width: 60px; height: 60px;" />
-                                    <% } %>
-                                      <p>ProductName: <%= x.productId.ProductName %>
-                                      </p>
-                                      <p>Item Price: $<%= x.productId?.discountAmount ? x.productId.discountAmount :
-                                          x.productId.price %>
-                                      </p>
-
-                                      <p style="color: rgb(3, 5, 50);">Quantity : <%= x.quantity %>
-
-                                      </p>
-                             
-                                      <% if (appliedCoupon) { %>
-                                        <div class="d-flex justify-content-between mb-3">
-                                          <p class="text-muted mb-0"><b>Applied Coupon Code: <%= appliedCoupon.code %>
-                                                </b></p>
-                                          <p class="text-muted mb-0"><b>Discount Amount: ₹ <%=
-                                                appliedCoupon.discountAmount.toFixed(2) %></b></p>
-                                        </div>
+                              
+                                    <% if (x.productId && x.productId.ProductImage &&
+                                      Array.isArray(x.productId.ProductImage) && x.productId.ProductImage.length> 0) {
+                                      %>
+                                      <img src="/upload/<%= x.productId.ProductImage[0] %>" class="border rounded me-3"
+                                        style="width: 120px; height: 120px;" />
+                                      <% } else { %>
+                                        <img src="#" class="border rounded me-3" style="width: 60px; height: 60px;" />
                                         <% } %>
+                                          <p>ProductName: <%= x.productId.ProductName %>
+                                          </p>
+                                          <p>Item Price: $<%= x.productId?.discountAmount ? x.productId.discountAmount :
+                                              x.productId.price %>
+                                          </p>
 
-                                          <% if(x.status=="Return" ){%>
-                                            <h5 style="color: brown;">item returned</h5>
+                                          <p style="color: rgb(3, 5, 50);">Quantity: <%= x.quantity %>
+                                          </p>
 
-                                            <% }else if(orderData[0].Status=="Delivered" ){ %>
+                                          <% const totalPrice=(x.productId?.discountAmount ? x.productId.discountAmount
+                                            : x.productId.price) * x.quantity || 0; %>
+                                            <% const tax=totalPrice * 0.01; %>
+                                              <p>Tax: $<%= tax.toFixed(2) %>
+                                              </p>
+                                              <% if (appliedCoupon) { %>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                  <p class="text-muted mb-0"><b>Applied Coupon Code: <%=
+                                                        appliedCoupon.code %>
+                                                    </b></p>
+                                                  <p class="text-muted mb-0"><b>Discount Amount: ₹ <%=
+                                                        appliedCoupon.discountAmount.toFixed(2) %></b></p>
+                                                </div>
+                                                <% } %>
 
-                                              <div
-                                                class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                                <button class="btn small btn-danger"
-                                                  style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                                                  id="returnOrderBtn" data-item-id="<%= x._id %> "
-                                                  data-order-id="<%=orderData[0]._id%>">Return</button>
+                                                  <% if(x.status=="Return" ){%>
+                                                    <h5 style="color: brown;">item returned</h5>
 
-                                                <button class="btn btn-outline-light float-left" type="button"
-                                                  onclick="generateAndDownloadInvoice('<%= orderData[0]._id %>')">download
-                                                  Invoice
-                                                </button>
-                                              </div>
-                                              <h3 style="color: rgb(2, 47, 2);">Write a Review</h3>
-                                              <div>
-                                                <form id="reviewForm" data-product-id="<%= productId %>">
-                                                  <div style="margin-bottom: 10px;">
-                                                    <label for="comment" style="font-weight: bold;">Comment:</label><br>
-                                                    <textarea id="comment" name="comment"
-                                                      style="width: 100%; height: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
-                                                  </div>
-                                                  <div style="margin-bottom: 10px;">
-                                                    <label for="rating" style="font-weight: bold;">Rating:</label><br>
-                                                    <div id="ratingStars">
-                                                      <span class="star" data-value="1">★</span>
-                                                      <span class="star" data-value="2">★</span>
-                                                      <span class="star" data-value="3">★</span>
-                                                      <span class="star" data-value="4">★</span>
-                                                      <span class="star" data-value="5">★</span>
-                                                    </div>
-                                                    <input type="hidden" id="rating" name="rating" value="0">
+                                                    <% }else if(orderData[0].Status=="Delivered" ){ %>
 
-                                                  </div>
-                                                  <button id="submitReviewButton" type="button"
-                                                    style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Submit
-                                                    Review</button>
-                                                </form>
-                                              </div>
+                                                      <div
+                                                        class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                        <button class="btn small btn-danger"
+                                                          style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
+                                                          id="returnOrderBtn" data-item-id="<%= x._id %> "
+                                                          data-order-id="<%=orderData[0]._id%>">Return</button>
 
-                                              <% } else if(x.status=="Cancelled" ){%>
-                                                <h5 style="color: brown;">item Cancelled</h5>
-                                                <% }else if(orderData[0].Status !=="Cancelled" ){%>
-                                                  <hr>
-                                                  <div
-                                                    class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                                    <button class="btn small btn-dark mb-3"
-                                                      style="  --bs-btn-font-size: .75rem;" id="cancelOrderBtn"
-                                                      data-item-id="<%= x._id %> "
-                                                      data-order-id="<%=orderData[0]._id%>">Cancel item</button>
-                                                  </div>
+                                                        <button class="btn btn-outline-light float-left" type="button"
+                                                          onclick="generateAndDownloadInvoice('<%= orderData[0]._id %>')">download
+                                                          Invoice
+                                                        </button>
+                                                      </div>
+                                                      <h3 style="color: rgb(2, 47, 2);">Write a Review</h3>
+                                                      <div>
+                                                        <form id="reviewForm" data-product-id="<%= productId %>">
+                                                          <div style="margin-bottom: 10px;">
+                                                            <label for="comment"
+                                                              style="font-weight: bold;">Comment:</label><br>
+                                                            <textarea id="comment" name="comment"
+                                                              style="width: 100%; height: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                                                          </div>
+                                                          <div style="margin-bottom: 10px;">
+                                                            <label for="rating"
+                                                              style="font-weight: bold;">Rating:</label><br>
+                                                            <div id="ratingStars">
+                                                              <span class="star" data-value="1">★</span>
+                                                              <span class="star" data-value="2">★</span>
+                                                              <span class="star" data-value="3">★</span>
+                                                              <span class="star" data-value="4">★</span>
+                                                              <span class="star" data-value="5">★</span>
+                                                            </div>
+                                                            <input type="hidden" id="rating" name="rating" value="0">
+
+                                                          </div>
+                                                          <button id="submitReviewButton" type="button"
+                                                            style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Submit
+                                                            Review</button>
+                                                        </form>
+                                                      </div>
+
+                                                      <% } else if(x.status=="Cancelled" ){%>
+                                                        <h5 style="color: brown;">item Cancelled</h5>
+                                                        <% }else if(orderData[0].Status !=="Cancelled" ){%>
+                                                          <hr>
+                                                          <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                            <button class="btn small btn-dark mb-3"
+                                                              style="  --bs-btn-font-size: .75rem;" id="cancelOrderBtn"
+                                                              data-item-id="<%= x._id %> "
+                                                              data-order-id="<%=orderData[0]._id%>">Cancel item</button>
+                                                          </div>
                             </div>
                             <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
 
@@ -681,8 +688,6 @@
 
     </script>
     <script src="/user/script/navbar.js"></script>
-
-
 </body>
 
 </html>

@@ -14,7 +14,7 @@ const sendOTP = async (email) => {
 
         // Generate new OTP
         const generatedOTP = await generateOTP();
-
+console.log(generatedOTP,'generated return');
         // Sending email to the user
         const mailOptions = {
             from: AUTH_EMAIL,
@@ -22,6 +22,7 @@ const sendOTP = async (email) => {
             subject: "Verify the Email using this OTP",
             html: `<p>Hello new user, use this OTP to verify your email and continue:</p><b>${generatedOTP}</b><p>OTP will expire in 10 minutes</p>`,
         };
+        
         await sendEmail(mailOptions);
         console.log(`Generated OTP: ${generatedOTP}`);
 

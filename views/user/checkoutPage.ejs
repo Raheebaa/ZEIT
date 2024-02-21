@@ -487,37 +487,43 @@
         }
       </script>
       <script>
-        function applyCoupon() {
-          const couponCodeInput = document.getElementById('couponCodeInput');
-          const couponCode = couponCodeInput.value;
+       function applyCoupon() {
+    const couponCodeInput = document.getElementById('couponCodeInput');
+    const couponCode = couponCodeInput.value;
 
-          fetch('/applyCoupon', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              couponCode: couponCode,
-            }),
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                // Update the discount amount and updated total amount elements
-                document.getElementById('discountAmount').innerText = data.discountAmount.toFixed(2);
-                document.getElementById('updatedTotalAmount').innerText = data.updatedTotalAmount.toFixed(2);
-                // Optionally, you can update other UI elements here
-                swal("Coupon Applied", "Your total amount has been updated.", "success");
-              } else {
-                console.error('Failed to apply coupon:', data.message);
+    fetch('/applyCoupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            couponCode: couponCode,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the discount amount and updated total amount elements
+            document.getElementById('discountAmount').innerText = data.discountAmount.toFixed(2);
+            document.getElementById('updatedTotalAmount').innerText = data.updatedTotalAmount.toFixed(2);
+            // Optionally, you can update other UI elements here
+            swal("Coupon Applied", "Your total amount has been updated.", "success");
+        } else {
+            // Check if the failure is due to a used coupon
+            if (data.message === 'You have already used a coupon.') {
+                // Display a message to the user indicating that they have already used a coupon
+                swal("Coupon Already Used", "You have already used a coupon.", "warning");
+            } else {
+                // Display a generic error message
                 swal("Error", "Failed to apply coupon. Please try again.", "error");
-              }
-            })
-            .catch(error => {
-              console.error('Error applying coupon:', error);
-              swal("Error", "An error occurred while applying the coupon. Please try again.", "error");
-            });
+            }
         }
+    })
+    .catch(error => {
+        console.error('Error applying coupon:', error);
+        swal("Error", "An error occurred while applying the coupon. Please try again.", "error");
+    });
+}
 
       </script>
 

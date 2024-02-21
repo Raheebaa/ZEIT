@@ -11,7 +11,7 @@ let mailTransporter = nodeMailer.createTransport({
 });
 mailTransporter.verify((error, success) => {
     if (error) {
-        console.log("error",error);
+        console.log("no network connection to send mail",error);
     } else {
         console.log("email ready");
         // console.log(success);
