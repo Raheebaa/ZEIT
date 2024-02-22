@@ -218,39 +218,13 @@ validateOtp: async (req, res) => {
           return res.render('./user/otpPage', { error: 'Invalid OTP' });
       }
 
-      // const referralId = userController.generateRefferalId();
-      // console.log(referralId, 'iiiiiiiiii');
-
-      // Check if referral ID exists in the session
-      // if (req.session.referralId) {
-      //     // Assuming bonusAmount is the bonus given to the referring user
-      //     const bonusAmount = 50; // Example bonus amount
-      //     // Increment referring user's wallet with referral bonus
-      //     const referringUser = await Users.findOneAndUpdate(
-      //         { referralId: req.session.referralId },
-      //         {
-      //             $inc: { 'wallet.balance': bonusAmount },
-      //             $push: {
-      //                 'wallet.transactions': {
-      //                     transactionType: 'credit',
-      //                     amount: bonusAmount,
-      //                     date: new Date(),
-      //                     from: 'Referral bonus',
-      //                 },
-      //             },
-      //         },
-      //         { new: true }
-      //     );
-      //     console.log('Referral bonus added to referring user:', referringUser);
-      // }
-
-      // Create user with referral ID
+   
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await Users.create({
           username: username,
           email: email,
           password: hashedPassword,
-          // referralId: referralId, Assign generated referral ID
+         referralId: referralId, 
       });
 
       // Increment the new user's wallet with 100 units

@@ -50,7 +50,7 @@
     <section>
         <div class="banner1">
             <% if (banners.length > 0) { %>
-                <a href="/productdetails/65c2264ac9e58607cb61e5d0" class="product-link">
+                <a href="/product/<%= banners[0].category %>" class="product-link">
                     <img src="/upload/<%= banners[0].imageUrl %>" class="img-fluid" alt="Banner1">
                 </a>
             <% } else { %>
@@ -128,11 +128,10 @@
 
         <div class="banner2">
             <% if (banners.length > 1) { %>
-                <a href="/productdetails/65c2298fc9e58607cb61f029 " class="product-link">
+                <a href="/product/<%= banners[1].category %>" class="product-link">
                     <img src="/upload/<%= banners[1].imageUrl %>" class="img-fluid" alt="Banner2">
                 </a>
             <% } else { %>
-
                 <p>No second banner available</p>
             <% } %>
         </div>

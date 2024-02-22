@@ -5,20 +5,19 @@
     <section>
         
         <% if (typeof results !== 'undefined' && results.length > 0) { %>
-            <!-- Display search results -->
+          
             <div class="container my-5">
                 <h2>Search Results for "<%= query %>"</h2>
                 <div class="row" style="display: flex; flex-wrap: nowrap; overflow-x: auto;">
                     <% results.forEach(product => { %>
                         <div class="col-md-4" style="flex: 0 0 auto; width: 33.33%;">
                             <div class="card">
-                                <!-- Render product information -->
+                             
                                 <a href="/productdetails/<%= product._id %>">
                                     <img src="/upload/<%= product.ProductImage[0] %>" class="card-img-top" alt="<%= product.ProductName %>">
                                 </a>
                                     <div class="card-body">
                                         <h5 class="card-title"><%= product.ProductName %></h5>
-                                        <!-- Add more product details as needed -->
                                     </div>
                                 
                             </div>
@@ -29,18 +28,17 @@
     
         
         <% } else { %>
-                <!-- Display other homepage content -->
-                <div class="banner1" style="width: 100%; overflow: hidden;">
-                    <% if (banners.length > 0) { %>
-                        <a href="/productdetails/65c2264ac9e58607cb61e5d0" class="product-link">
-                            <img src="/upload/<%= banners[0].imageUrl %>" class="img-fluid" style="width: 100%; height: auto;" alt="Banner1">
-                        </a>
-                    <% } else { %>
-                        <!-- Placeholder image or alternative content if no banners are available -->
-                        <p>No banners available</p>
-                    <% } %>
-                </div>
-
+    
+            <div class="banner1">
+                <% if (banners.length > 0) { %>
+                    <a href="/product/<%= banners[0].category %>" class="product-link">
+                        <img src="/upload/<%= banners[0].imageUrl %>" class="img-fluid" alt="Banner1">
+                    </a>
+                <% } else { %>
+                    <!-- Placeholder image or alternative content if no banners are available -->
+                    <p>No banners available</p>
+                <% } %>
+            </div>
               
         
                 <div class="popcard">
@@ -109,14 +107,13 @@
             </div>
                  
 
-            <div class="banner2" style="width: 100%; overflow: hidden;">
-                <% if (banners.length > 0) { %>
-                    <a href="/productdetails/65c2298fc9e58607cb61f029" class="product-link">
-                        <img src="/upload/<%= banners[1].imageUrl %>" class="img-fluid" style="width: 100%; height: auto;" alt="Banner2">
+            <div class="banner2">
+                <% if (banners.length > 1) { %>
+                    <a href="/product/<%= banners[1].category %>" class="product-link">
+                        <img src="/upload/<%= banners[1].imageUrl %>" class="img-fluid" alt="Banner2">
                     </a>
                 <% } else { %>
-                    <!-- Placeholder image or alternative content if no banners are available -->
-                    <p>No banners available</p>
+                    <p>No second banner available</p>
                 <% } %>
             </div>
             

@@ -165,27 +165,30 @@ const adminController = {
 
 getAddbanner: async (req, res) => {
   try {
-      res.render('./admin/addbanner', { error: '' });
+    const category = await Category.find();
+    console.log(category,'cat');
+    res.render('./admin/addbanner', { error: '', category }); 
   } catch (error) {
-      console.log("error");
+    console.log("Error fetching categories:", error);
+    res.status(500).send('Internal Server Error');
   }
 },
+
 
 postAddbanner: async (req, res) => {
   try {
-   
-      req.body.imageUrl = req.file.filename;
-      console.log(req.file);
-
-      // If the category doesn't exist, create a new one
-      const savedCategory = await Banner.create(req.body);
-      res.redirect('/admin/banner');
-      // console.log(req.body, '///////////////////');
+    req.body.imageUrl = req.file.filename;
+    const selectedCategory = req.body.category; // Get the selected category from the form data
+    console.log(selectedCategory);
+    // Save the banner details including the selected category
+    await Banner.create({ imageUrl: req.body.imageUrl, category: selectedCategory });
+    res.redirect('/admin/banner');
   } catch (error) {
-      console.error('Error:', error);
-      res.status(500).send('Internal Server Error');
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
   }
 },
+
 
 deleteBanner: async (req, res) => {
   try {

@@ -240,8 +240,6 @@ const generateSalesReport = async (req, res) => {
   }
 };
 
-
-
 const customSalesReport = async (req, res) => {
   try {
     const startDate = new Date(req.body.startDate);

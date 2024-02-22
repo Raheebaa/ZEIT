@@ -38,7 +38,7 @@ module.exports = {
                 "products": (orderDetails[0].Items && orderDetails[0].Items.length > 0) ? orderDetails[0].Items.filter(product => product.status !== "Cancelled").map((product) => ({
                     "quantity": product.quantity,
                     "description": product.productId.ProductName, 
-                    "tax-rate": 18,
+                    "tax-rate": 0.01,
                     "price": product.productId.price
                 })) : [],
                 
