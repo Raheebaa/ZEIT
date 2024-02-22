@@ -12,36 +12,66 @@
     .error-message {
       color: red;
     }
+    .image-container {
+      margin-top: 100px; /* Move log5.jpg image down by 100px */
+    }
+    .image-wrapper {
+      position: absolute;
+      top: 0; /* Position Z.jpg image and "ZEIT" text at the top */
+      left: 1;
+      display: flex;
+      align-items: center;
+    }
+    .custom-image {
+      width: 50px;
+    }
+
+    /* Adjustments for smaller screens */
+    @media (max-width: 768px) {
+      .image-container {
+        margin-top: 50px; /* Reduce margin-top for smaller screens */
+      }
+      .image-wrapper {
+        padding-left: 20px; /* Adjust padding-left for smaller screens */
+      }
+    }
+
+    /* Move image-wrapper 400px to the right */
+    @media (min-width: 1200px) {
+      .image-wrapper {
+        left: 440px;
+        top: 110px;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+  <div class="container" style="padding-top: 120px;">
     <div class="row">
       <!-- Left Column - Picture -->
       <div class="col-md-6">
         <div class="image-container text-center">
-          <img src="/assets/log5.jpg" class="img-fluid" alt="Sample image" style=" max-height: 500px; margin-top: 150px;">
+          <img src="/assets/log5.jpg" class="img-fluid" alt="Sample image">
         </div>
       </div>
 
       <!-- Right Column - Form -->
       <div class="col-md-6">
-        <div class="col-md-9 col-lg-6 col-xl-5 text-center">
-          <div class="image-container" style="display: flex; align-items: flex-start; margin-bottom: 10px;">
-            <div class="image-wrapper">
-              <img src="/assets/Z.jpg" id="custom-image" class="img-fluid" alt="Sample image" style="width: 50px;">
-            </div>
-            <div class="d-fl
-            ex align-items-center ml-2">
+        <div class="col-12 text-center">
+          <div class="image-wrapper">
+            <!-- <div class="image-wrapper">
+              <img src="/assets/Z.jpg" id="custom-image" class="img-fluid custom-image" alt="Sample image">
+            </div> -->
+            <div class="d-flex align-items-center ml-2">
               <span class="h1 fw-bold mb-0">ZEIT</span>
             </div>
           </div>
          
           <div class="login">
             <div class="input">
-              <form action="/signupp" method="post" class="signUp-form border border-dark border-2 p-4 mt-5" id="signUp-form" style="width: 500px;">
+              <form action="/signupp" method="post" class="signUp-form border border-dark border-2 p-4 mt-5" id="signUp-form">
                 <div class="header_text">
                   <h2>SIGNUP</h2>
                 </div>
@@ -68,7 +98,6 @@
                   </div>
 
                   <div class="mb-3">
-              
                     <input class="form-control login-input" type="password" id="confirmPassword" placeholder="Confirm Password" required>
                     <div class="error-message" id="confirmPasswordError"></div>
                   </div>

@@ -244,7 +244,7 @@ module.exports = {
 
       if (!userData) {
         // Handle the case where the user is not found
-        return res.render("user/Orders", { error: "User not found" });
+        return res.render("./user/Orders", { error: "User not found" });
       }
       const userId = userData._id;
       const orderData = await order.find({ UserID: userId }).populate('Items.productId').sort({ OrderDate: -1 });
@@ -256,7 +256,7 @@ module.exports = {
       // Define currentPage based on the page query parameter
       const currentPage = page;
       req.session.user = userData;
-      res.render('user/Orders', { title: 'Orders', orderData: paginatedOrderData, userData, currentPage, brands });
+      res.render('./user/Orders', { title: 'Orders', orderData: paginatedOrderData, userData, currentPage, brands });
     } catch (error) {
       console.error("Error in orders:", error);
       return res.render("user/Orders", { error: "Error fetching data" });
