@@ -181,7 +181,7 @@ const userController = {
         // Check if the email already exists
         const existingUser = await Users.findOne({ email: email });
         if (existingUser) {
-            return res.render('./user/signup', { error: "User already exists. Please log in." });
+            return res.render('./user/signUp', { error: "User already exists. Please log in." });
         }
         req.session.signupdetails = { username, email, password }
 console.log(req.session.signupdetails,'dettt');
