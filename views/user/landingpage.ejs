@@ -75,12 +75,13 @@
                                     <a href="/product/<%= category.CategoryName %>">
                                         <img src="/upload/<%= category.CategoryImage %>" class="card-img-top"
                                             alt="<%= category.CategoryName %>">
+                                        </a>
                                         <div class="card-body">
                                             <h5 class="card-title" style="text-decoration: none;color: black;">
                                                 <%= category.CategoryName %>
                                             </h5>
                                         </div>
-                                    </a>
+                                    
                                 </div>
                             </div>
                             <% } %>
@@ -107,12 +108,13 @@
                                     <a href="/productdetails/<%= product._id %>">
                                         <img src="/upload/<%= product.ProductImage[0] %>" class="card-img-top rounded"
                                             alt="<%= product.ProductName %>">
+                                        </a>
                                         <div class="card-body">
                                             <h5 class="card-title" style="text-decoration: none;color: black;">
                                                 <%= product.ProductName %>
                                             </h5>
                                         </div>
-                                    </a>
+                                    
                                 </div>
                             </div>
                             <% }); %>
