@@ -90,7 +90,8 @@ module.exports = {
             const brandId = req.params.brandId;
             await brandmodel.findByIdAndUpdate(brandId, { isBlocked: true });
             const brands = await brandmodel.find({});
-            res.render('./admin/brand', { brands });
+            const currentPage = parseInt(req.query.page) || 1; // Define currentPage based on the page query parameter
+            res.render('./admin/brand', { brands, currentPage });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -100,11 +101,11 @@ module.exports = {
             const brandId = req.params.brandId;
             await brandmodel.findByIdAndUpdate(brandId, { isBlocked: false });
             const brands = await brandmodel.find({});
-            res.render('./admin/brand', { brands });
+            const currentPage = parseInt(req.query.page) || 1; // Define currentPage based on the page query parameter
+            res.render('./admin/brand', { brands, currentPage });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
-
-
+    
 }

@@ -106,64 +106,54 @@ module.exports = {
   updateProduct: async (req, res) => {
     try {
       const id = req.params.productId;
+      const { ProductName, category, BrandName, price, stock } = req.body;
+  
+      // Find the product by ID
       const product = await productModel.findById(id);
-      const { ProductName, category, brand, price, stock } = req.body;
   
-      const updatedFields = {
-        ProductName: ProductName,
-        category: category,
-        brand: brand,
-        price: price,
-        stock: stock,
-       
-      };
-      await productModel.findOneAndUpdate({ _id: id }, updatedFields);
-  
-      // Check if the request is coming from a purchase action
-      const isPurchase = req.body.isPurchase === 'true';
-  
-      if (isPurchase) {
-        const purchasedQuantity = req.body.purchasedQuantity;
-  
-        // Update the stock of the product based on purchasedQuantity
-        await productModel.findByIdAndUpdate(id, { $inc: { stock: -purchasedQuantity } });
+      // Check if the product exists
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
       }
   
+      // Update the product fields
+      product.ProductName = ProductName;
+      product.category = category;
+
+      product.brand = BrandName; // Update the brand ID
+  
+      product.price = price;
+      product.stock = stock;
+  
+      // Save the updated product
+      await product.save();
+  
+      // Check if there are any images to update
       if (req.files) {
         for (let i = 0; i < 3; i++) {
-          if (
-            req.files[`image${i}`] &&
-            req.files[`image${i}`][0]
-          ) {
-            let changed = await productModel.findByIdAndUpdate(
-              id,
-              {
-                $set: {
-                  [`ProductImage.${i}`]: req.files[`image${i}`][0].filename,
-                },
-              },
-              {
-                new: true,
-              }
-            );
-            console.log(changed);
+          const fieldName = `image${i}`;
+          if (req.files[fieldName] && req.files[fieldName][0]) {
+            product.ProductImage[i] = req.files[fieldName][0].filename;
           }
         }
+        // Save the updated images
+        await product.save();
       }
   
+      // Redirect to the product page
       res.redirect('/admin/product');
     } catch (error) {
-      console.error(error);
-      res.render('error', { error });
+      console.error("Error updating product:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-  },
-  
+  },   
   blockProduct: async (req, res) => {
     try {
       const productId = req.params.productId;
       await productModel.findByIdAndUpdate(productId, { isBlocked: true });
       const products = await productModel.find({}).populate('category').populate('brand');
-      res.render('./admin/product', { products });
+      const currentPage = 1; // Define currentPage here
+      res.render('./admin/product', { products, currentPage });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -174,11 +164,13 @@ module.exports = {
       const productId = req.params.productId;
       await productModel.findByIdAndUpdate(productId, { isBlocked: false });
       const products = await productModel.find({}).populate('category').populate('brand');
-      res.render('./admin/product', { products });
+      const currentPage = 1; // Define currentPage here
+      res.render('./admin/product', { products, currentPage });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
+
   updateQuantity: async (req, res) => {
     try {
       const { itemId, change, newQuantity } = req.body;
