@@ -224,7 +224,7 @@ validateOtp: async (req, res) => {
           username: username,
           email: email,
           password: hashedPassword,
-         referralId: referralId, 
+        //  referralId: referralId, 
       });
 
       // Increment the new user's wallet with 100 units
