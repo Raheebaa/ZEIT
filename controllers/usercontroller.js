@@ -21,7 +21,7 @@ const saltRounds = 10;
 
 const userController = {
 
-   generateRefferalId:()=>{
+  generateRefferalId:()=>{
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let id = "";
     for (let i = 0; i < 10; i++) {
@@ -30,7 +30,8 @@ const userController = {
     }
     
     return id;
-  },
+},
+
   
   nav: async (req, res) => {
     try {
@@ -170,91 +171,79 @@ const userController = {
 
   signupp: async (req, res) => {
     try {
-        const brands = await Brands.find({});
-        const categories = await Category.find({});
-        const product = await productmodel.find({})
-        const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false })
         const { username, email, password } = req.body;
-        console.log(req.body,'signupp');
-        const referralId = req.query.referralId; // Extract referral ID from query parameters
-
-        // Check if the email already exists
+  
+        // Check if a user with the same email already exists
         const existingUser = await Users.findOne({ email: email });
         if (existingUser) {
-            return res.render('./user/signUp', { error: "User already exists. Please log in." });
+            return res.render('./user/userlogin', { error: 'Email already exists. Please log in.' });
         }
-        req.session.signupdetails = { username, email, password }
-console.log(req.session.signupdetails,'dettt');
-        hashedPassword = await bcrypt.hash(password, 10);
+  
+        // Generate referral ID and OTP
+        const referralId = userController.generateRefferalId();
+        const hashedPassword = await bcrypt.hash(password, 10);
         const createdOTP = await sendOTP(email);
-        console.log(createdOTP, 'otp created');
+  
+        // Store signup details in session
         req.session.email = email;
-        req.session.user = user;
-      
-        // Redirect to the OTP page
-        res.render('./user/otpPage', { email });
+        req.session.signupdetails = { username, email, password, referralId };
+  
+        // Render OTP page for verification
+        res.render('./user/otpPage', { email, referralId }); // Pass referralId to the OTP page
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
     }
-},
+  },
 
-validateOtp: async (req, res) => {
-  try {
-      // Retrieve necessary data for rendering the page
+
+  validateOtp: async (req, res) => {
+    try {
       const brands = await Brands.find({});
       const categories = await Category.find({});
       const product = await productmodel.find({});
       const newarrival = await productmodel.find({ isNewArrival: true, isBlocked: false });
-
-      console.log('verifying otp..');
+  
       const { otp1, otp2, otp3, otp4 } = req.body;
       const enteredOtp = otp1 + otp2 + otp3 + otp4;
-      const { username, email, password } = req.session.signupdetails;
-
+      const { username, email, password,referralId } = req.session.signupdetails;
+  
       const createdOTPrecord = await Otp.findOne({ email, otp: enteredOtp });
       if (!createdOTPrecord) {
-          console.log('Invalid OTP Rendering user/Otp...')
-          return res.render('./user/otpPage', { error: 'Invalid OTP' });
+        console.log('Invalid OTP Rendering user/Otp...')
+        return res.render('./user/otpPage', { error: 'Invalid OTP' });
       }
-
-   
+  
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await Users.create({
-          username: username,
-          email: email,
-          password: hashedPassword,
-        //  referralId: referralId, 
+        username: username,
+        email: email,
+        password: hashedPassword,
       });
 
-      // Increment the new user's wallet with 100 units
-      // const signupBonusAmount = 100; // Example signup bonus amount
-      // const updatedNewUser = await Users.findOneAndUpdate(
-      //     { _id: newUser._id },
-      //     {
-      //         $inc: { 'wallet.balance': signupBonusAmount },
-      //         $push: {
-      //             'wallet.transactions': {
-      //                 transactionType: 'credit',
-      //                 amount: signupBonusAmount,
-      //                 date: new Date(),
-      //                 from: 'Sign-up bonus',
-      //             },
-      //         },
-      //     },
-      //     { new: true }
-      // );
-
-      // console.log('New user saved:', updatedNewUser);
-
+      console.log(referralId,'refiddd2');
+      if (referralId) {
+        // Find the referring user based on the referral ID
+        const referringUser = await Users.findOne({ referralId: referralId });
+        console.log(referringUser,'refuser2');
+        if (referringUser) {
+          // Increment the referring user's wallet balance by 100 units
+          referringUser.wallet.balance += 100;
+          await referringUser.save();
+        }
+        // Remove referral ID from session
+        delete req.session.signupdetails.referralId;
+      }
+  
       // Redirect user to home page after successful signup
       req.session.user = newUser.username;
       res.redirect('/home');
-  } catch (error) {
+    } catch (error) {
       console.error('Error in OTP verification:', error);
       res.status(500).json({ error: 'Internal Server Error' });
-  }
-},
+    }
+  },
+
 
 
   getresentOtp: async (req, res) => {
@@ -455,7 +444,7 @@ showProductDeails: async (req, res) => {
     }
   },
 
-  getprofile: async (req, res) => {
+ getprofile: async (req, res) => {
     try {
         const email = req.session.email;
         const brands = await Brands.find({});
@@ -467,12 +456,15 @@ showProductDeails: async (req, res) => {
 
         // Fetch the referring user based on the referralId
         const referringUser = await Users.findOne({ referralId: userData.referralId });
+        console.log(referringUser,'refuser profile');
         let referredByEmail = null;
         if (referringUser) {
             referredByEmail = referringUser.email;
         }
 
         const referralLink = `${req.protocol}://${req.get('host')}/usersignup/?=referral=${userData.referralId}`;
+        
+        console.log(referralLink);
 
         req.session.user = userData;
 
@@ -482,6 +474,8 @@ showProductDeails: async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 },
+
+
 
   userProfile: async (req, res) => {
     try {
