@@ -294,66 +294,77 @@ console.log(updatedTotalAmount);
         return res.render("user/orderDetails", { error: "Error fetching data" });
     }
 },
+cancelOrder: async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const orderData = await order.findById(orderId);
 
+    if (orderData.Status !== 'Delivered') {
+      const originalStatus = orderData.Status; // Save the original status for later use
+      orderData.Status = 'Cancelled';
 
-  cancelOrder: async (req, res) => {
-    try {
-      const orderId = req.params.id;
-      const orderData = await order.findById(orderId);
+      // Check if the payment method was "wallet" or "online"
+      if (orderData.paymentMethod === 'wallet' || orderData.paymentMethod === 'online') {
+        const userId = orderData.UserID;
+        let userWallet = await walletmodel.findOne({ userId: userId });
 
-      if (orderData.Status !== 'Delivered') {
-        const originalStatus = orderData.Status; // Save the original status for later use
-        orderData.Status = 'Cancelled';
-
-        // Check if the payment method was "wallet" or "online"
-        if (orderData.paymentMethod === 'wallet' || orderData.paymentMethod === 'online') {
-          const userId = orderData.UserID;
-          const userWallet = await walletmodel.findOne({ userId: userId });
-
-          if (userWallet) {
-            // Add the canceled order amount back to the wallet balance
-            userWallet.balance += orderData.TotalAmount;
-
-            // Save the updated wallet document
-            await userWallet.save();
-
-            // Add a transaction to represent the credit
-            userWallet.transactions.push({
+        if (!userWallet) {
+          // If the user doesn't have a wallet, create a new one
+          const newWallet = new walletmodel({
+            userId: userId,
+            balance: orderData.TotalAmount,
+            transactions: [{
               transactionType: 'credit',
               amount: orderData.TotalAmount,
               date: new Date(),
               from: 'order cancellation',
               orderId: orderId,
-            });
+            }],
+          });
+          userWallet = await newWallet.save();
+        } else {
+          // If the user has a wallet, add the canceled order amount back to the wallet balance
+          userWallet.balance += orderData.TotalAmount;
 
-            await userWallet.save();
-            await Orders.findOneAndUpdate({ _id: orderId }, { paymentStatus: 'refunded' });
-          }
+          // Add a transaction to represent the credit
+          userWallet.transactions.push({
+            transactionType: 'credit',
+            amount: orderData.TotalAmount,
+            date: new Date(),
+            from: 'order cancellation',
+            orderId: orderId,
+          });
+
+          await userWallet.save();
         }
 
-        await orderData.save();
-
-        for (const item of orderData.Items) {
-          if (item.productId) {
-            const product = await productUpload.findById(item.productId);
-
-            if (product) {
-              // Increase the product stock based on canceled order item quantity
-              product.AvailableQuantity += item.quantity;
-              await product.save();
-            }
-          }
-        }
-
-        return res.json({ success: true, message: 'Order has been canceled', originalStatus });
-      } else {
-        return res.json({ success: false, message: 'Cannot cancel a delivered order' });
+        await order.findOneAndUpdate({ _id: orderId }, { paymentStatus: 'refunded' });
       }
-    } catch (error) {
-      console.log('Error canceling order:', error);
-      return res.status(500).json({ success: false, message: 'An error occurred while canceling the order' });
+
+      await orderData.save();
+
+      for (const item of orderData.Items) {
+        if (item.productId) {
+          const product = await productUpload.findById(item.productId);
+
+          if (product) {
+            // Increase the product stock based on canceled order item quantity
+            product.AvailableQuantity += item.quantity;
+            await product.save();
+          }
+        }
+      }
+
+      return res.json({ success: true, message: 'Order has been cancelled', originalStatus });
+    } else {
+      return res.json({ success: false, message: 'Cannot cancel a delivered order' });
     }
-  },
+  } catch (error) {
+    console.log('Error cancelling order:', error);
+    return res.status(500).json({ success: false, message: 'An error occurred while cancelling the order' });
+  }
+},
+
   oneItemcancel: async (req, res) => {
     try {
       const { orderId, itemId } = req.body;
@@ -361,8 +372,7 @@ console.log(updatedTotalAmount);
       // console.log(itemId, "Item ID");
       const newitemId = itemId.trim();
       const orderData = await order.findById(orderId);
-      // console.log(orderData, "Order Data");
-
+    
       if (!orderData) {
         return res.status(404).json({ message: 'Order not found' });
       }
